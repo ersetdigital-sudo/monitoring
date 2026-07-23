@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from "next/server";
+import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseExcelBuffer } from "@/lib/excel-parser";
 
@@ -119,6 +120,15 @@ export async function POST(request: NextRequest) {
         valid_rows: result.rows.length,
       })
       .eq("id", upload.id);
+
+    // Revalidate pages that depend on upload data
+    revalidatePath("/pengaturan");
+    revalidatePath("/");
+    revalidatePath("/tabel-data");
+    revalidatePath("/data-salut");
+    revalidatePath("/ranking-salut");
+    revalidatePath("/grafik-analitik");
+    revalidatePath("/laporan");
 
     return NextResponse.json({
       success: true,

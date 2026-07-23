@@ -11,7 +11,11 @@ interface UploadResult {
   details?: string[];
 }
 
-export function UploadForm() {
+interface UploadFormProps {
+  onUploadSuccess?: () => void;
+}
+
+export function UploadForm({ onUploadSuccess }: UploadFormProps) {
   const [file, setFile] = useState<File | null>(null);
   const [uploading, setUploading] = useState(false);
   const [result, setResult] = useState<UploadResult | null>(null);
@@ -38,6 +42,7 @@ export function UploadForm() {
       if (data.success) {
         setFile(null);
         if (inputRef.current) inputRef.current.value = "";
+        onUploadSuccess?.();
       }
     } catch {
       setResult({ error: "Gagal mengupload file. Coba lagi." });

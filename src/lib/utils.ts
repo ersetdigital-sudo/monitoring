@@ -10,7 +10,6 @@ export function calculateSummary(data: SalutData[]): DashboardSummary {
     0
   );
   const ongoing = data.reduce((sum, d) => sum + d.ongoing_total, 0);
-  const total_bayar_sv23 = data.reduce((sum, d) => sum + d.sv23_total, 0);
   const progress_total =
     total_admisi > 0 ? Math.round((total_bayar / total_admisi) * 10000) / 100 : 0;
 
@@ -21,7 +20,6 @@ export function calculateSummary(data: SalutData[]): DashboardSummary {
     dapat_nim,
     registrasi_mtk,
     ongoing,
-    total_bayar_sv23,
     progress_total,
   };
 }

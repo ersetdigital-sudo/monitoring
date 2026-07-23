@@ -64,9 +64,9 @@ export default function GrafikAnalitikPage() {
     belum: d.admisi_belum_bayar,
   }));
 
-  const sv23Data = sorted.map((d) => ({
+  const ongoingData = sorted.map((d) => ({
     name: d.nama_salut.replace("SALUT ", "").substring(0, 12),
-    sv23: d.sv23_total,
+    total: d.total_bayar_akhir,
     ongoing: d.ongoing_total,
   }));
 
@@ -115,19 +115,19 @@ export default function GrafikAnalitikPage() {
         </div>
       </div>
 
-      {/* Ongoing + SV23 */}
+      {/* Ongoing + Total Bayar */}
       <div className="card p-5">
-        <h3 className="text-sm font-bold mb-4">Ongoing & Total Bayar SV23 per SALUT</h3>
+        <h3 className="text-sm font-bold mb-4">Ongoing & Total Bayar per SALUT</h3>
         <div className="h-80">
           <ResponsiveContainer width="100%" height="100%">
-            <BarChart data={sv23Data} margin={{ top: 4, right: 8, bottom: 4, left: 4 }}>
+            <BarChart data={ongoingData} margin={{ top: 4, right: 8, bottom: 4, left: 4 }}>
               <CartesianGrid strokeDasharray="3 3" stroke="#e6ebf3" vertical={false} />
               <XAxis dataKey="name" tick={{ fontSize: 9, fill: "#64748b" }} angle={-45} textAnchor="end" height={60} />
               <YAxis tick={{ fontSize: 10, fill: "#64748b" }} />
               <Tooltip contentStyle={{ fontSize: 11, borderRadius: 8, border: "1px solid #e6ebf3" }} />
               <Legend wrapperStyle={{ fontSize: 10 }} />
               <Bar dataKey="ongoing" name="Ongoing" fill="#d97706" radius={[4, 4, 0, 0]} />
-              <Bar dataKey="sv23" name="Total Bayar SV23" fill="#ca8a04" radius={[4, 4, 0, 0]} />
+              <Bar dataKey="total" name="Total Bayar" fill="#16a34a" radius={[4, 4, 0, 0]} />
             </BarChart>
           </ResponsiveContainer>
         </div>
@@ -198,8 +198,8 @@ export default function GrafikAnalitikPage() {
                   <div className="font-bold">{formatNumber(d.ongoing_total)}</div>
                 </div>
                 <div>
-                  <div className="text-[var(--muted)]">SV23</div>
-                  <div className="font-bold text-[var(--brand)]">{formatNumber(d.sv23_total)}</div>
+                  <div className="text-[var(--muted)]">Total Bayar</div>
+                  <div className="font-bold text-[var(--brand)]">{formatNumber(d.total_bayar_akhir)}</div>
                 </div>
               </div>
             </div>

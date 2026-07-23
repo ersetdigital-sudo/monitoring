@@ -8,7 +8,7 @@ import { ICONS } from "@/lib/icons";
 export default function RankingSalutPage() {
   const [data, setData] = useState<SalutData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<"sv23_total" | "admisi_bayar" | "dapat_nim" | "total_admisi">("sv23_total");
+  const [sortBy, setSortBy] = useState<"total_bayar_akhir" | "admisi_bayar" | "dapat_nim" | "total_admisi">("total_bayar_akhir");
 
   useEffect(() => {
     fetch("/api/data")
@@ -41,7 +41,7 @@ export default function RankingSalutPage() {
   ];
 
   const sortOptions = [
-    { value: "sv23_total", label: "Total Bayar SV23" },
+    { value: "total_bayar_akhir", label: "Total Bayar" },
     { value: "admisi_bayar", label: "Admisi Bayar" },
     { value: "dapat_nim", label: "Dapat NIM" },
     { value: "total_admisi", label: "Total Admisi" },

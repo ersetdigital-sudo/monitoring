@@ -32,7 +32,6 @@ export default function LaporanPage() {
   const totalNim = data.reduce((s, d) => s + d.dapat_nim, 0);
   const totalRegMtk = data.reduce((s, d) => s + (d.total_admisi - d.belum_registrasi_mtk), 0);
   const totalOngoing = data.reduce((s, d) => s + d.ongoing_total, 0);
-  const totalSv23 = data.reduce((s, d) => s + d.sv23_total, 0);
 
   const handlePrint = () => window.print();
 
@@ -49,13 +48,12 @@ export default function LaporanPage() {
       `Dapat NIM,${totalNim}`,
       `Registrasi MTK,${totalRegMtk}`,
       `Ongoing,${totalOngoing}`,
-      `Total Bayar SV23,${totalSv23}`,
       `Progress Total,${formatPercent(totalAdmisi > 0 ? (totalBayar / totalAdmisi) * 100 : 0)}`,
       "",
       "DATA PER SALUT",
-      "SALUT,ADMISI,BAYAR,BELUM BAYAR,NIM,REG MTK,ONGOING,SV23,TOTAL BAYAR",
+      "SALUT,ADMISI,BAYAR,BELUM BAYAR,NIM,REG MTK,ONGOING,TOTAL BAYAR",
       ...data.map((d) =>
-        `${d.nama_salut},${d.total_admisi},${d.admisi_bayar},${d.admisi_belum_bayar},${d.dapat_nim},${d.total_admisi - d.belum_registrasi_mtk},${d.ongoing_total},${d.sv23_total},${d.total_bayar_akhir}`
+        `${d.nama_salut},${d.total_admisi},${d.admisi_bayar},${d.admisi_belum_bayar},${d.dapat_nim},${d.total_admisi - d.belum_registrasi_mtk},${d.ongoing_total},${d.total_bayar_akhir}`
       ),
     ].join("\n");
 
@@ -122,7 +120,6 @@ export default function LaporanPage() {
                 ["Dapat NIM", formatNumber(totalNim), formatPercent(totalAdmisi > 0 ? (totalNim / totalAdmisi) * 100 : 0)],
                 ["Registrasi MTK", formatNumber(totalRegMtk), formatPercent(totalAdmisi > 0 ? (totalRegMtk / totalAdmisi) * 100 : 0)],
                 ["Ongoing", formatNumber(totalOngoing), formatPercent(totalAdmisi > 0 ? (totalOngoing / totalAdmisi) * 100 : 0)],
-                ["Total Bayar SV23", formatNumber(totalSv23), formatPercent(totalAdmisi > 0 ? (totalSv23 / totalAdmisi) * 100 : 0)],
               ].map(([label, value, pct]) => (
                 <tr key={String(label)} className="hover:bg-slate-50">
                   <td className="py-2 pr-3 font-semibold">{label}</td>
@@ -149,7 +146,6 @@ export default function LaporanPage() {
                   <th className="py-2 pr-3 font-semibold">NIM</th>
                   <th className="py-2 pr-3 font-semibold">REG MTK</th>
                   <th className="py-2 pr-3 font-semibold">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold">SV23</th>
                   <th className="py-2 pr-3 font-semibold">TOTAL BAYAR</th>
                 </tr>
               </thead>
@@ -164,7 +160,6 @@ export default function LaporanPage() {
                     <td className="py-2 pr-3">{formatNumber(d.dapat_nim)}</td>
                     <td className="py-2 pr-3">{formatNumber(d.total_admisi - d.belum_registrasi_mtk)}</td>
                     <td className="py-2 pr-3">{formatNumber(d.ongoing_total)}</td>
-                    <td className="py-2 pr-3 font-bold text-[var(--brand)]">{formatNumber(d.sv23_total)}</td>
                     <td className="py-2 pr-3 font-semibold">{formatNumber(d.total_bayar_akhir)}</td>
                   </tr>
                 ))}

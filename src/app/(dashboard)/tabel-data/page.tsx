@@ -71,9 +71,6 @@ export default function TabelDataPage() {
     { key: "ongoing_belum_bayar", label: "Ongoing Belum Bayar" },
     { key: "ongoing_bayar", label: "Ongoing Bayar" },
     { key: "ongoing_total", label: "ONGOING TOTAL" },
-    { key: "sv23_belum_bayar", label: "SV23 Belum Bayar" },
-    { key: "sv23_bayar", label: "SV23 Bayar" },
-    { key: "sv23_total", label: "SV23 TOTAL" },
     { key: "total_bayar_akhir", label: "TOTAL BAYAR" },
   ];
 
@@ -185,11 +182,6 @@ export default function TabelDataPage() {
                     <td className="py-2.5 pr-3">{formatNumber(r.ongoing_belum_bayar)}</td>
                     <td className="py-2.5 pr-3">{formatNumber(r.ongoing_bayar)}</td>
                     <td className="py-2.5 pr-3">{formatNumber(r.ongoing_total)}</td>
-                    <td className="py-2.5 pr-3">{formatNumber(r.sv23_belum_bayar)}</td>
-                    <td className="py-2.5 pr-3">{formatNumber(r.sv23_bayar)}</td>
-                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)]">
-                      {formatNumber(r.sv23_total)}
-                    </td>
                     <td className="py-2.5 pr-3 font-semibold">
                       {formatNumber(r.total_bayar_akhir)}
                     </td>

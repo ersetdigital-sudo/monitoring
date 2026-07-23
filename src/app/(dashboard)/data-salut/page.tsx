@@ -114,8 +114,8 @@ export default function DataSalutPage() {
                   <span className="font-semibold">{formatNumber(d.dapat_nim)}</span>
                 </div>
                 <div>
-                  <span className="text-[var(--muted)]">SV23:</span>{" "}
-                  <span className="font-semibold text-[var(--brand)]">{formatNumber(d.sv23_total)}</span>
+                  <span className="text-[var(--muted)]">Total Bayar:</span>{" "}
+                  <span className="font-semibold text-[var(--brand)]">{formatNumber(d.total_bayar_akhir)}</span>
                 </div>
               </div>
             </div>

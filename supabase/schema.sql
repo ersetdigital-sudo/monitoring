@@ -29,9 +29,6 @@ CREATE TABLE IF NOT EXISTS salut_data (
   ongoing_belum_bayar INTEGER NOT NULL DEFAULT 0,
   ongoing_bayar INTEGER NOT NULL DEFAULT 0,
   ongoing_total INTEGER NOT NULL DEFAULT 0,
-  sv23_belum_bayar INTEGER NOT NULL DEFAULT 0,
-  sv23_bayar INTEGER NOT NULL DEFAULT 0,
-  sv23_total INTEGER NOT NULL DEFAULT 0,
   total_bayar_akhir INTEGER NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );

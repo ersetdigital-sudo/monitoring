@@ -29,8 +29,8 @@ export function parseExcelBuffer(buffer: Buffer): ParsedExcelResult {
 
   // Validate headers
   const headerRow = raw[2]; // Row index 2 = row 3 in Excel
-  if (!headerRow || headerRow.length < 13) {
-    errors.push("Struktur header tidak sesuai template. Minimal 13 kolom diperlukan.");
+  if (!headerRow || headerRow.length < 9) {
+    errors.push("Struktur header tidak sesuai template. Minimal 9 kolom diperlukan.");
     return { rows: [], validationRow: null, errors };
   }
 
@@ -55,9 +55,6 @@ export function parseExcelBuffer(buffer: Buffer): ParsedExcelResult {
       ongoing_belum_bayar: toNum(row[6]),
       ongoing_bayar: toNum(row[7]),
       ongoing_total: toNum(row[8]),
-      sv23_belum_bayar: toNum(row[9]),
-      sv23_bayar: toNum(row[10]),
-      sv23_total: toNum(row[11]),
       total_bayar_akhir: toNum(row[12]),
     };
 

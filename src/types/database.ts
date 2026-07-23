@@ -22,9 +22,6 @@ export interface SalutData {
   ongoing_belum_bayar: number;
   ongoing_bayar: number;
   ongoing_total: number;
-  sv23_belum_bayar: number;
-  sv23_bayar: number;
-  sv23_total: number;
   total_bayar_akhir: number;
   created_at: string;
 }
@@ -44,7 +41,6 @@ export interface DashboardSummary {
   dapat_nim: number;
   registrasi_mtk: number;
   ongoing: number;
-  total_bayar_sv23: number;
   progress_total: number;
 }
 

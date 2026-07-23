@@ -86,12 +86,11 @@ export function DashboardContent() {
     { title: "DAPAT NIM", value: formatNumber(summary.dapat_nim), unit: "Mahasiswa", sub: `${pct(summary.dapat_nim)} dari admisi`, color: "#7c3aed", bg: "#ede9fe", icon: ICONS.id },
     { title: "REGISTRASI MTK", value: formatNumber(summary.registrasi_mtk), unit: "Mahasiswa", sub: `${pct(summary.registrasi_mtk)} dari admisi`, color: "#2563eb", bg: "#e0edff", icon: ICONS.book },
     { title: "ONGOING", value: formatNumber(summary.ongoing), unit: "Mahasiswa", sub: `${pct(summary.ongoing)} dari admisi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
-    { title: "TOTAL BAYAR SV23", value: formatNumber(summary.total_bayar_sv23), unit: "Mahasiswa", sub: `${pct(summary.total_bayar_sv23)} dari admisi`, color: "#ca8a04", bg: "#fef9c3", icon: ICONS.money },
     { title: "PROGRESS TOTAL", value: formatPercent(summary.progress_total), unit: "Pembayaran", sub: "", color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
   ];
 
   const top5 = [...data]
-    .sort((a, b) => b.sv23_total - a.sv23_total)
+    .sort((a, b) => b.total_bayar_akhir - a.total_bayar_akhir)
     .slice(0, 5);
 
   const medalConfig = [
@@ -183,7 +182,7 @@ export function DashboardContent() {
                   <th className="py-2 pr-3 font-semibold">DAPAT NIM</th>
                   <th className="py-2 pr-3 font-semibold">REG MTK</th>
                   <th className="py-2 pr-3 font-semibold">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold">TOTAL BAYAR SV23</th>
+                  <th className="py-2 pr-3 font-semibold">TOTAL BAYAR</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
@@ -204,7 +203,7 @@ export function DashboardContent() {
                     </td>
                     <td className="py-2.5 pr-3">{formatNumber(r.ongoing_total)}</td>
                     <td className="py-2.5 pr-3 font-bold text-[var(--brand)]">
-                      {formatNumber(r.sv23_total)}
+                      {formatNumber(r.total_bayar_akhir)}
                     </td>
                   </tr>
                 ))}
@@ -215,7 +214,7 @@ export function DashboardContent() {
 
         <div className="card p-4">
           <h3 className="text-sm font-bold mb-3">
-            Ranking SALUT (Berdasarkan Total Bayar SV23)
+            Ranking SALUT (Berdasarkan Total Bayar)
           </h3>
           <ul className="space-y-2.5">
             {top5.map((r, i) => {
@@ -244,7 +243,7 @@ export function DashboardContent() {
                     {r.nama_salut}
                   </span>
                   <span className="text-sm font-extrabold text-[var(--brand)]">
-                    {formatNumber(r.sv23_total)}
+                    {formatNumber(r.total_bayar_akhir)}
                   </span>
                 </li>
               );

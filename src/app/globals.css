@@ -1,0 +1,75 @@
+@import "tailwindcss";
+
+:root {
+  --brand: #1b4fa8;
+  --brand-dark: #12327a;
+  --brand-deep: #0d1f5c;
+  --ink: #1f2937;
+  --muted: #64748b;
+  --line: #e6ebf3;
+  --bg: #eef2f8;
+  --background: #ffffff;
+  --foreground: #1f2937;
+  --font-sans: "Plus Jakarta Sans", system-ui, sans-serif;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-brand: var(--brand);
+  --color-brand-dark: var(--brand-dark);
+  --color-brand-deep: var(--brand-deep);
+  --color-ink: var(--ink);
+  --color-muted: var(--muted);
+  --color-line: var(--line);
+  --color-bg: var(--bg);
+}
+
+body {
+  background: var(--bg);
+  color: var(--ink);
+  font-family: var(--font-sans);
+}
+
+/* Scrollbar */
+.scroll-thin::-webkit-scrollbar {
+  height: 8px;
+  width: 8px;
+}
+.scroll-thin::-webkit-scrollbar-thumb {
+  background: #c7d2e4;
+  border-radius: 99px;
+}
+
+/* Card */
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+  box-shadow: 0 1px 2px rgba(16, 38, 84, 0.04),
+    0 8px 24px rgba(16, 38, 84, 0.04);
+}
+
+/* Sidebar */
+.sidebar-link {
+  transition: all 0.15s ease;
+}
+.sidebar-link:hover {
+  background: rgba(255, 255, 255, 0.1);
+}
+.sidebar-link.active {
+  background: #fff;
+  color: var(--brand);
+  font-weight: 700;
+}
+
+/* Stat icon */
+.stat-icon {
+  width: 46px;
+  height: 46px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex: none;
+}

@@ -6,8 +6,14 @@ export interface Upload {
   status: "processing" | "completed" | "failed";
   total_rows: number | null;
   valid_rows: number | null;
+  duplicate_rows: number | null;
   error_message: string | null;
   created_at: string;
+}
+
+export interface DuplicateDetail {
+  nama_salut: string;
+  reason: "Duplikat dalam file" | "Sudah ada di data sebelumnya";
 }
 
 export interface SalutData {

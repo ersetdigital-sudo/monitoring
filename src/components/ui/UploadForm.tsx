@@ -1,11 +1,15 @@
 "use client";
 
 import { useState, useRef } from "react";
+import type { DuplicateDetail } from "@/types/database";
 
 interface UploadResult {
   success?: boolean;
+  all_duplicate?: boolean;
   upload_id?: string;
   rows_imported?: number;
+  rows_duplicate?: number;
+  duplicates?: DuplicateDetail[];
   warnings?: string[];
   error?: string;
   details?: string[];
@@ -39,7 +43,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
       const data = await res.json();
       setResult(data);
 
-      if (data.success) {
+      if (data.success && data.rows_imported > 0) {
         setFile(null);
         if (inputRef.current) inputRef.current.value = "";
         onUploadSuccess?.();
@@ -99,24 +103,14 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
       {result && (
         <div
           className={`rounded-lg p-4 text-sm ${
-            result.success
-              ? "bg-green-50 border border-green-200 text-green-800"
-              : "bg-red-50 border border-red-200 text-red-800"
+            result.error
+              ? "bg-red-50 border border-red-200 text-red-800"
+              : result.all_duplicate
+              ? "bg-amber-50 border border-amber-200 text-amber-800"
+              : "bg-green-50 border border-green-200 text-green-800"
           }`}
         >
-          {result.success ? (
-            <>
-              <div className="font-bold">Upload berhasil!</div>
-              <div>{result.rows_imported} baris data SALUT berhasil diimport.</div>
-              {result.warnings && result.warnings.length > 0 && (
-                <ul className="mt-2 list-disc list-inside text-xs text-amber-700">
-                  {result.warnings.map((w, i) => (
-                    <li key={i}>{w}</li>
-                  ))}
-                </ul>
-              )}
-            </>
-          ) : (
+          {result.error ? (
             <>
               <div className="font-bold">{result.error}</div>
               {result.details && (
@@ -127,6 +121,66 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
                 </ul>
               )}
             </>
+          ) : result.all_duplicate ? (
+            <>
+              <div className="font-bold">Seluruh data sudah ada</div>
+              <div>
+                Semua {result.rows_duplicate} baris dalam file merupakan duplikat
+                dari data sebelumnya. Tidak ada data baru yang diimport.
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="font-bold">Upload selesai!</div>
+              <div>
+                {result.rows_imported} baris berhasil diimport
+                {result.rows_duplicate && result.rows_duplicate > 0 && (
+                  <span>
+                    ,{" "}
+                    <span className="font-semibold text-amber-700">
+                      {result.rows_duplicate} baris ditolak (duplikat)
+                    </span>
+                  </span>
+                )}
+                .
+              </div>
+            </>
+          )}
+
+          {/* Duplicate details */}
+          {result.duplicates && result.duplicates.length > 0 && (
+            <div className="mt-3">
+              <div className="text-xs font-bold mb-1.5">
+                Detail baris yang ditolak:
+              </div>
+              <div className="overflow-x-auto">
+                <table className="w-full text-xs">
+                  <thead>
+                    <tr className="text-left border-b border-amber-200">
+                      <th className="py-1 pr-3 font-semibold">Nama SALUT</th>
+                      <th className="py-1 pr-3 font-semibold">Alasan</th>
+                    </tr>
+                  </thead>
+                  <tbody className="divide-y divide-amber-100">
+                    {result.duplicates.map((d, i) => (
+                      <tr key={i}>
+                        <td className="py-1 pr-3">{d.nama_salut}</td>
+                        <td className="py-1 pr-3 text-xs">{d.reason}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+          {/* Warnings */}
+          {result.warnings && result.warnings.length > 0 && (
+            <ul className="mt-2 list-disc list-inside text-xs text-amber-700">
+              {result.warnings.map((w, i) => (
+                <li key={i}>{w}</li>
+              ))}
+            </ul>
           )}
         </div>
       )}

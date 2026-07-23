@@ -59,6 +59,7 @@ export function UploadHistory({ refreshTrigger }: UploadHistoryProps) {
             <th className="py-2 pr-3 font-semibold">Tanggal</th>
             <th className="py-2 pr-3 font-semibold">Status</th>
             <th className="py-2 pr-3 font-semibold">Baris</th>
+            <th className="py-2 pr-3 font-semibold">Duplikat</th>
           </tr>
         </thead>
         <tbody className="divide-y divide-[var(--line)]">
@@ -86,6 +87,13 @@ export function UploadHistory({ refreshTrigger }: UploadHistoryProps) {
                 </span>
               </td>
               <td className="py-2.5 pr-3">{u.valid_rows ?? "-"}</td>
+              <td className="py-2.5 pr-3">
+                {u.duplicate_rows && u.duplicate_rows > 0 ? (
+                  <span className="text-amber-600 font-semibold">{u.duplicate_rows}</span>
+                ) : (
+                  <span className="text-[var(--muted)]">0</span>
+                )}
+              </td>
             </tr>
           ))}
         </tbody>

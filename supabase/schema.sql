@@ -12,6 +12,7 @@ CREATE TABLE IF NOT EXISTS uploads (
   status TEXT NOT NULL DEFAULT 'processing' CHECK (status IN ('processing', 'completed', 'failed')),
   total_rows INTEGER,
   valid_rows INTEGER,
+  duplicate_rows INTEGER DEFAULT 0,
   error_message TEXT,
   created_at TIMESTAMPTZ DEFAULT now()
 );

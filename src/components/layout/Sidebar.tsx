@@ -16,7 +16,12 @@ const navItems = [
   { href: "/pengaturan", label: "Pengaturan", icon: ICONS.settings },
 ];
 
-export function Sidebar() {
+interface SidebarProps {
+  open: boolean;
+  onClose: () => void;
+}
+
+export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const [salutList, setSalutList] = useState<string[]>([]);
 
@@ -32,103 +37,114 @@ export function Sidebar() {
       .catch(() => {});
   }, []);
 
+  // Close on route change
+  useEffect(() => {
+    onClose();
+  }, [pathname, onClose]);
+
   return (
-    <aside
-      className="hidden lg:flex w-64 flex-col text-white/90 relative overflow-hidden"
-      style={{
-        background:
-          "linear-gradient(180deg, var(--brand-dark), var(--brand-deep))",
-      }}
-    >
-      {/* Logo — exact match */}
-      <div className="px-5 py-5 flex items-center gap-3 border-b border-white/10">
-        <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--brand)] font-extrabold">
-          UT
-        </div>
-        <div className="leading-tight">
-          <div className="text-sm font-extrabold tracking-wide">
-            UNIVERSITAS TERBUKA
+    <>
+      {/* Mobile overlay */}
+      {open && (
+        <div
+          className="fixed inset-0 bg-black/40 z-40 lg:hidden"
+          onClick={onClose}
+        />
+      )}
+
+      <aside
+        className={`
+          fixed lg:static inset-y-0 left-0 z-50
+          w-64 flex flex-col text-white/90 overflow-hidden
+          transition-transform duration-300 ease-in-out
+          ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        `}
+        style={{
+          background:
+            "linear-gradient(180deg, var(--brand-dark), var(--brand-deep))",
+        }}
+      >
+        {/* Logo */}
+        <div className="px-5 py-5 flex items-center gap-3 border-b border-white/10">
+          <div className="w-10 h-10 rounded-full bg-white flex items-center justify-center text-[var(--brand)] font-extrabold">
+            UT
           </div>
-          <div className="text-[10px] text-white/60 italic">
-            Making Higher Education Open to All
+          <div className="leading-tight">
+            <div className="text-sm font-extrabold tracking-wide">
+              UNIVERSITAS TERBUKA
+            </div>
+            <div className="text-[10px] text-white/60 italic">
+              Making Higher Education Open to All
+            </div>
+          </div>
+          {/* Close button mobile */}
+          <button
+            onClick={onClose}
+            className="ml-auto lg:hidden p-1 rounded hover:bg-white/10"
+          >
+            <svg className="w-5 h-5" viewBox="0 0 256 256" fill="currentColor">
+              <path d="M205.66 194.34a8 8 0 0 1-11.32 11.32L128 139.31l-66.34 66.35a8 8 0 0 1-11.32-11.32L116.69 128 50.34 61.66a8 8 0 0 1 11.32-11.32L128 116.69l66.34-66.35a8 8 0 0 1 11.32 11.32L139.31 128Z" />
+            </svg>
+          </button>
+        </div>
+
+        {/* Navigation */}
+        <nav className="px-3 py-4 space-y-1 text-sm flex-1 overflow-y-auto">
+          {navItems.map((item) => {
+            const isActive =
+              item.href === "/"
+                ? pathname === "/"
+                : pathname.startsWith(item.href);
+            return (
+              <Link
+                key={item.href}
+                href={item.href}
+                className={`sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg ${
+                  isActive ? "active" : ""
+                }`}
+              >
+                <span dangerouslySetInnerHTML={{ __html: item.icon }} />
+                <span>{item.label}</span>
+              </Link>
+            );
+          })}
+        </nav>
+
+        {/* Filter Section */}
+        <div className="px-4 py-3 border-t border-white/10">
+          <div className="text-[11px] font-bold tracking-wider text-white/50 mb-2">
+            FILTER DATA
+          </div>
+          <div className="space-y-2">
+            <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
+              <option>Semua SALUT</option>
+              {salutList.map((s) => (
+                <option key={s} value={s}>
+                  {s}
+                </option>
+              ))}
+            </select>
+            <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
+              <option>Semua Status Bayar</option>
+              <option>Sudah Bayar</option>
+              <option>Belum Bayar</option>
+            </select>
+          </div>
+          <button className="w-full mt-3 text-xs font-semibold bg-white text-[var(--brand)] rounded-lg py-2 flex items-center justify-center gap-2">
+            <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
+              <path d="m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32Z" />
+            </svg>
+            Terapkan Filter
+          </button>
+        </div>
+
+        {/* Footer */}
+        <div className="px-4 py-3 text-[10px] text-white/50 border-t border-white/10">
+          <div className="text-xl font-extrabold text-white/90 leading-none">
+            Kampus Merdeka
           </div>
         </div>
-      </div>
-
-      {/* Navigation — exact match */}
-      <nav className="px-3 py-4 space-y-1 text-sm">
-        {navItems.map((item) => {
-          const isActive =
-            item.href === "/"
-              ? pathname === "/"
-              : pathname.startsWith(item.href);
-          return (
-            <Link
-              key={item.href}
-              href={item.href}
-              className={`sidebar-link flex items-center gap-3 px-3 py-2.5 rounded-lg ${
-                isActive ? "active" : ""
-              }`}
-            >
-              <span dangerouslySetInnerHTML={{ __html: item.icon }} />
-              <span>{item.label}</span>
-            </Link>
-          );
-        })}
-      </nav>
-
-      {/* Filter Section — exact match */}
-      <div className="px-4 mt-2">
-        <div className="text-[11px] font-bold tracking-wider text-white/50 mb-2">
-          FILTER DATA
-        </div>
-        <div className="space-y-2">
-          <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
-            <option>Semua SALUT</option>
-            {salutList.map((s) => (
-              <option key={s} value={s}>
-                {s}
-              </option>
-            ))}
-          </select>
-          <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
-            <option>Semua Status Bayar</option>
-            <option>Sudah Bayar</option>
-            <option>Belum Bayar</option>
-          </select>
-          <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
-            <option>Semua Dapat NIM</option>
-            <option>Sudah Dapat NIM</option>
-            <option>Belum Dapat NIM</option>
-          </select>
-          <select className="w-full text-xs bg-white/10 border border-white/15 rounded-lg px-3 py-2 text-white/90 outline-none">
-            <option>Semua Ongoing</option>
-            <option>Ada Ongoing</option>
-            <option>Tidak Ongoing</option>
-          </select>
-        </div>
-        <button className="w-full mt-3 text-xs font-semibold bg-white text-[var(--brand)] rounded-lg py-2 flex items-center justify-center gap-2">
-          <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
-            <path d="m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32Z" />
-          </svg>
-          Terapkan Filter
-        </button>
-        <button className="w-full mt-2 text-xs font-semibold bg-white/10 border border-white/15 rounded-lg py-2 flex items-center justify-center gap-2">
-          <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
-            <path d="M197.67 186.37a8 8 0 0 1 0 11.29A95.92 95.92 0 0 1 32 128a8 8 0 0 1 16 0 80 80 0 1 0 20.28-53.28L83.72 90.14A8 8 0 0 1 78 103.73H32a8 8 0 0 1-8-8V49.68a8 8 0 0 1 13.66-5.66l14.28 14.28A96 96 0 0 1 197.67 186.37Z" />
-          </svg>
-          Reset Filter
-        </button>
-      </div>
-
-      {/* Footer — exact match */}
-      <div className="mt-auto p-4 text-[10px] text-white/50">
-        <div className="text-2xl font-extrabold text-white/90 leading-none">
-          Kampus
-          <br />
-          Merdeka
-        </div>
-      </div>
-    </aside>
+      </aside>
+    </>
   );
 }

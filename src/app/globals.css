@@ -25,20 +25,26 @@
   --color-bg: var(--bg);
 }
 
+* {
+  font-family: var(--font-sans);
+}
+
 body {
   background: var(--bg);
   color: var(--ink);
-  font-family: var(--font-sans);
 }
 
 /* Scrollbar */
 .scroll-thin::-webkit-scrollbar {
-  height: 8px;
-  width: 8px;
+  height: 6px;
+  width: 6px;
 }
 .scroll-thin::-webkit-scrollbar-thumb {
   background: #c7d2e4;
   border-radius: 99px;
+}
+.scroll-thin::-webkit-scrollbar-track {
+  background: transparent;
 }
 
 /* Card */
@@ -53,9 +59,11 @@ body {
 /* Sidebar */
 .sidebar-link {
   transition: all 0.15s ease;
+  color: rgba(255, 255, 255, 0.75);
 }
 .sidebar-link:hover {
   background: rgba(255, 255, 255, 0.1);
+  color: rgba(255, 255, 255, 0.95);
 }
 .sidebar-link.active {
   background: #fff;
@@ -72,4 +80,37 @@ body {
   align-items: center;
   justify-content: center;
   flex: none;
+}
+
+/* Smooth page transitions */
+main {
+  animation: fadeIn 0.2s ease-out;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(4px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* Print styles */
+@media print {
+  aside,
+  header,
+  footer,
+  .no-print {
+    display: none !important;
+  }
+  main {
+    padding: 0 !important;
+  }
+  .card {
+    box-shadow: none !important;
+    border: 1px solid #ddd !important;
+  }
 }

@@ -94,6 +94,25 @@ body {
   background: transparent;
 }
 
+/* Sidebar select dropdown — fix white text on white background */
+.sidebar-select {
+  background-color: rgba(255, 255, 255, 0.1);
+  border: 1px solid rgba(255, 255, 255, 0.15);
+  color: rgba(255, 255, 255, 0.9);
+}
+.sidebar-select:focus {
+  border-color: rgba(255, 255, 255, 0.3);
+}
+.sidebar-select option {
+  background-color: #1e293b;
+  color: #f1f5f9;
+}
+.sidebar-select option:hover,
+.sidebar-select option:checked {
+  background-color: var(--brand);
+  color: #fff;
+}
+
 /* Stat icon */
 .stat-icon {
   width: 46px;

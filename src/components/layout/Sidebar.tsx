@@ -54,8 +54,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={`
-          fixed lg:static inset-y-0 left-0 z-50
-          w-64 flex flex-col text-white/90 overflow-hidden
+          fixed lg:sticky lg:top-0 inset-y-0 left-0 z-50
+          w-64 h-screen flex flex-col text-white/90
           transition-transform duration-300 ease-in-out
           ${open ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
         `}

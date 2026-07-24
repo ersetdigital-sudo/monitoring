@@ -180,12 +180,12 @@ export function DashboardContent() {
                 <tr className="text-[var(--muted)] border-b border-[var(--line)]">
                   <th className="py-2 pr-3 font-semibold">NO</th>
                   <th className="py-2 pr-3 font-semibold">SALUT</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">ADMISI</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">BELUM</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">NIM</th>
-                  <th className="py-2 pr-3 font-semibold bg-orange-50">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold bg-slate-50">TOTAL BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">ADMISI</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">BELUM</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">NIM</th>
+                  <th className="py-2 pr-3 font-semibold bg-orange-100">ONGOING</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-100">TOTAL BAYAR</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
@@ -193,12 +193,12 @@ export function DashboardContent() {
                   <tr key={r.id} className="hover:bg-slate-50">
                     <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
                     <td className="py-2.5 pr-3 font-semibold">{r.nama_salut}</td>
-                    <td className="py-2.5 pr-3 bg-blue-50/30">{formatNumber(r.total_admisi)}</td>
-                    <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50/30">{formatNumber(r.maba_bayar_admisi)}</td>
-                    <td className="py-2.5 pr-3 text-rose-600 bg-blue-50/30">{formatNumber(r.maba_belum_bayar_admisi)}</td>
-                    <td className="py-2.5 pr-3 bg-blue-50/30">{formatNumber(r.dapat_nim)}</td>
-                    <td className="py-2.5 pr-3 bg-orange-50/30">{formatNumber(r.ongoing_total_registrasi)}</td>
-                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)] bg-slate-50/30">{formatNumber(r.total_bayar_spp_gabungan)}</td>
+                    <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.total_admisi)}</td>
+                    <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50">{formatNumber(r.maba_bayar_admisi)}</td>
+                    <td className="py-2.5 pr-3 text-rose-600 bg-blue-50">{formatNumber(r.maba_belum_bayar_admisi)}</td>
+                    <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.dapat_nim)}</td>
+                    <td className="py-2.5 pr-3 bg-orange-50">{formatNumber(r.ongoing_total_registrasi)}</td>
+                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)] bg-slate-50">{formatNumber(r.total_bayar_spp_gabungan)}</td>
                   </tr>
                 ))}
               </tbody>

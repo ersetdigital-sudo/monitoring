@@ -1,6 +1,6 @@
 -- =============================================
 -- Dashboard Monitoring Registrasi Mahasiswa
--- Supabase Schema
+-- Supabase Schema (Updated)
 -- =============================================
 
 -- Tabel riwayat upload file
@@ -22,15 +22,25 @@ CREATE TABLE IF NOT EXISTS salut_data (
   id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
   upload_id UUID NOT NULL REFERENCES uploads(id) ON DELETE CASCADE,
   nama_salut TEXT NOT NULL,
+  -- Maba > Admisi
   total_admisi INTEGER NOT NULL DEFAULT 0,
-  admisi_bayar INTEGER NOT NULL DEFAULT 0,
-  admisi_belum_bayar INTEGER NOT NULL DEFAULT 0,
+  maba_bayar_admisi INTEGER NOT NULL DEFAULT 0,
+  maba_belum_bayar_admisi INTEGER NOT NULL DEFAULT 0,
+  -- Maba > Dapat Nim & Registrasi
   dapat_nim INTEGER NOT NULL DEFAULT 0,
   belum_registrasi_mtk INTEGER NOT NULL DEFAULT 0,
-  ongoing_belum_bayar INTEGER NOT NULL DEFAULT 0,
-  ongoing_bayar INTEGER NOT NULL DEFAULT 0,
-  ongoing_total INTEGER NOT NULL DEFAULT 0,
-  total_bayar_akhir INTEGER NOT NULL DEFAULT 0,
+  -- Maba > Registrasi Mtk
+  maba_registrasi_belum_bayar_spp INTEGER NOT NULL DEFAULT 0,
+  maba_registrasi_bayar_spp INTEGER NOT NULL DEFAULT 0,
+  maba_registrasi_total INTEGER NOT NULL DEFAULT 0,
+  -- Ongoing > Registrasi Mtk
+  ongoing_belum_bayar_spp INTEGER NOT NULL DEFAULT 0,
+  ongoing_bayar_spp INTEGER NOT NULL DEFAULT 0,
+  ongoing_total_registrasi INTEGER NOT NULL DEFAULT 0,
+  -- Gabungan
+  total_bayar_spp_gabungan INTEGER NOT NULL DEFAULT 0,
+  target_maba INTEGER NOT NULL DEFAULT 0,
+  realisasi_maba NUMERIC(5,4) NOT NULL DEFAULT 0,
   created_at TIMESTAMPTZ DEFAULT now()
 );
 

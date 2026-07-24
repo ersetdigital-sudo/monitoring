@@ -8,7 +8,7 @@ import { ICONS } from "@/lib/icons";
 export default function RankingSalutPage() {
   const [data, setData] = useState<SalutData[]>([]);
   const [loading, setLoading] = useState(true);
-  const [sortBy, setSortBy] = useState<"total_bayar_akhir" | "admisi_bayar" | "dapat_nim" | "total_admisi">("total_bayar_akhir");
+  const [sortBy, setSortBy] = useState<"total_bayar_spp_gabungan" | "maba_bayar_admisi" | "dapat_nim" | "total_admisi" | "realisasi_maba">("total_bayar_spp_gabungan");
 
   useEffect(() => {
     fetch("/api/data")
@@ -41,27 +41,24 @@ export default function RankingSalutPage() {
   ];
 
   const sortOptions = [
-    { value: "total_bayar_akhir", label: "Total Bayar" },
-    { value: "admisi_bayar", label: "Admisi Bayar" },
+    { value: "total_bayar_spp_gabungan", label: "Total Bayar SPP" },
+    { value: "maba_bayar_admisi", label: "Admisi Bayar" },
     { value: "dapat_nim", label: "Dapat NIM" },
     { value: "total_admisi", label: "Total Admisi" },
+    { value: "realisasi_maba", label: "Realisasi Maba" },
   ] as const;
 
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">
-          Ranking SALUT
-        </h2>
+        <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Ranking SALUT</h2>
         <select
           value={sortBy}
           onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
           className="text-sm border border-[var(--line)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--brand)]/30"
         >
           {sortOptions.map((o) => (
-            <option key={o.value} value={o.value}>
-              Urutkan: {o.label}
-            </option>
+            <option key={o.value} value={o.value}>Urutkan: {o.label}</option>
           ))}
         </select>
       </div>
@@ -70,32 +67,26 @@ export default function RankingSalutPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         {sorted.slice(0, 3).map((d, i) => {
           const medal = medalConfig[i];
-          const pct = totalAdmisi > 0 ? (d[sortBy] / totalAdmisi) * 100 : 0;
+          const pct = totalAdmisi > 0 ? (d[sortBy] / (sortBy === "realisasi_maba" ? 1 : totalAdmisi)) * 100 : 0;
           return (
             <div key={d.id} className="card p-5 text-center">
-              <div
-                className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center"
-                style={{ background: medal.bg, color: medal.color }}
-              >
-                <span
-                  dangerouslySetInnerHTML={{ __html: ICONS.trophy }}
-                  className="[&>svg]:w-7 [&>svg]:h-7"
-                />
+              <div className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: medal.bg, color: medal.color }}>
+                <span dangerouslySetInnerHTML={{ __html: ICONS.trophy }} className="[&>svg]:w-7 [&>svg]:h-7" />
               </div>
               <div className="text-xs text-[var(--muted)] mb-1">#{i + 1}</div>
               <div className="text-sm font-bold mb-1 truncate">{d.nama_salut}</div>
               <div className="text-2xl font-extrabold" style={{ color: "var(--brand)" }}>
-                {formatNumber(d[sortBy])}
+                {sortBy === "realisasi_maba" ? formatPercent(d[sortBy]) : formatNumber(d[sortBy])}
               </div>
               <div className="text-xs text-[var(--muted)]">
-                {formatPercent(pct)} dari total
+                {sortBy === "realisasi_maba" ? "Realisasi Maba" : `${formatPercent(pct / 100)} dari total`}
               </div>
             </div>
           );
         })}
       </div>
 
-      {/* Full Ranking List */}
+      {/* Full Ranking */}
       <div className="card p-4">
         <h3 className="text-sm font-bold mb-4">Ranking Lengkap</h3>
         <div className="space-y-2">
@@ -103,43 +94,21 @@ export default function RankingSalutPage() {
             const rank = i + 1;
             const medal = i < 3 ? medalConfig[i] : null;
             const maxVal = sorted[0][sortBy] || 1;
-            const barWidth = (d[sortBy] / maxVal) * 100;
+            const barWidth = sortBy === "realisasi_maba" ? d[sortBy] * 100 : (d[sortBy] / maxVal) * 100;
 
             return (
-              <div
-                key={d.id}
-                className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors"
-              >
-                <span
-                  className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0"
-                  style={{
-                    background: medal ? medal.bg : "#e2e8f0",
-                    color: medal ? medal.color : "#64748b",
-                  }}
-                >
-                  {rank <= 3 ? (
-                    <span
-                      dangerouslySetInnerHTML={{ __html: ICONS.trophy }}
-                      className="[&>svg]:w-4 [&>svg]:h-4"
-                    />
-                  ) : (
-                    rank
-                  )}
+              <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
+                <span className="w-8 h-8 rounded-full flex items-center justify-center text-xs font-bold flex-shrink-0" style={{ background: medal ? medal.bg : "#e2e8f0", color: medal ? medal.color : "#64748b" }}>
+                  {rank <= 3 ? <span dangerouslySetInnerHTML={{ __html: ICONS.trophy }} className="[&>svg]:w-4 [&>svg]:h-4" /> : rank}
                 </span>
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold truncate">{d.nama_salut}</div>
                   <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
-                    <div
-                      className="h-full rounded-full"
-                      style={{
-                        width: `${barWidth}%`,
-                        background: "var(--brand)",
-                      }}
-                    />
+                    <div className="h-full rounded-full" style={{ width: `${Math.min(barWidth, 100)}%`, background: "var(--brand)" }} />
                   </div>
                 </div>
                 <span className="text-sm font-extrabold text-[var(--brand)] flex-shrink-0">
-                  {formatNumber(d[sortBy])}
+                  {sortBy === "realisasi_maba" ? formatPercent(d[sortBy]) : formatNumber(d[sortBy])}
                 </span>
               </div>
             );

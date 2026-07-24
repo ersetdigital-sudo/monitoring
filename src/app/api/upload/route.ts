@@ -2,20 +2,24 @@ import { NextRequest, NextResponse } from "next/server";
 import { revalidatePath } from "next/cache";
 import { createClient } from "@/lib/supabase/server";
 import { parseExcelBuffer } from "@/lib/excel-parser";
-import type { SalutData, DuplicateDetail } from "@/types/database";
+import type { DuplicateDetail } from "@/types/database";
 
-type ParsedRow = Omit<SalutData, "id" | "upload_id" | "created_at">;
+type ParsedRow = ReturnType<typeof parseExcelBuffer>["rows"][number];
 
 const VALUE_COLS: (keyof ParsedRow)[] = [
   "total_admisi",
-  "admisi_bayar",
-  "admisi_belum_bayar",
+  "maba_bayar_admisi",
+  "maba_belum_bayar_admisi",
   "dapat_nim",
   "belum_registrasi_mtk",
-  "ongoing_belum_bayar",
-  "ongoing_bayar",
-  "ongoing_total",
-  "total_bayar_akhir",
+  "maba_registrasi_belum_bayar_spp",
+  "maba_registrasi_bayar_spp",
+  "maba_registrasi_total",
+  "ongoing_belum_bayar_spp",
+  "ongoing_bayar_spp",
+  "ongoing_total_registrasi",
+  "total_bayar_spp_gabungan",
+  "target_maba",
 ];
 
 function isRowIdentical(a: ParsedRow, b: ParsedRow): boolean {
@@ -48,6 +52,8 @@ export async function POST(request: NextRequest) {
 
   const formData = await request.formData();
   const file = formData.get("file") as File | null;
+  const targetMabaStr = formData.get("target_maba") as string | null;
+  const targetMabaPerSalut = targetMabaStr ? parseInt(targetMabaStr, 10) : 0;
 
   if (!file) {
     return NextResponse.json(
@@ -64,7 +70,6 @@ export async function POST(request: NextRequest) {
   }
 
   try {
-    // Parse Excel
     const buffer = Buffer.from(await file.arrayBuffer());
     const result = parseExcelBuffer(buffer);
 
@@ -73,6 +78,16 @@ export async function POST(request: NextRequest) {
         { error: "Parsing gagal", details: result.errors },
         { status: 400 }
       );
+    }
+
+    // Set target_maba if provided
+    if (targetMabaPerSalut > 0) {
+      for (const row of result.rows) {
+        row.target_maba = targetMabaPerSalut;
+        row.realisasi_maba = row.target_maba > 0
+          ? row.maba_registrasi_bayar_spp / row.target_maba
+          : 0;
+      }
     }
 
     // === LEVEL A: Intra-file duplicate check ===
@@ -94,7 +109,6 @@ export async function POST(request: NextRequest) {
     }
 
     // === LEVEL B: Inter-upload duplicate check ===
-    // Get latest completed upload's salut_data
     const { data: latestUpload } = await supabase
       .from("uploads")
       .select("id")
@@ -111,7 +125,7 @@ export async function POST(request: NextRequest) {
         .eq("upload_id", latestUpload.id);
 
       if (existing) {
-        existingData = existing as ParsedRow[];
+        existingData = existing as unknown as ParsedRow[];
       }
     }
 
@@ -168,10 +182,24 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Insert only valid rows
+    // Insert valid rows
     const salutRows = validRows.map((row) => ({
       upload_id: upload.id,
-      ...row,
+      nama_salut: row.nama_salut,
+      total_admisi: row.total_admisi,
+      maba_bayar_admisi: row.maba_bayar_admisi,
+      maba_belum_bayar_admisi: row.maba_belum_bayar_admisi,
+      dapat_nim: row.dapat_nim,
+      belum_registrasi_mtk: row.belum_registrasi_mtk,
+      maba_registrasi_belum_bayar_spp: row.maba_registrasi_belum_bayar_spp,
+      maba_registrasi_bayar_spp: row.maba_registrasi_bayar_spp,
+      maba_registrasi_total: row.maba_registrasi_total,
+      ongoing_belum_bayar_spp: row.ongoing_belum_bayar_spp,
+      ongoing_bayar_spp: row.ongoing_bayar_spp,
+      ongoing_total_registrasi: row.ongoing_total_registrasi,
+      total_bayar_spp_gabungan: row.total_bayar_spp_gabungan,
+      target_maba: row.target_maba,
+      realisasi_maba: row.realisasi_maba,
     }));
 
     const { error: insertError } = await supabase
@@ -193,15 +221,11 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Update upload as completed
     await supabase
       .from("uploads")
-      .update({
-        status: "completed",
-      })
+      .update({ status: "completed" })
       .eq("id", upload.id);
 
-    // Revalidate pages
     revalidatePath("/pengaturan");
     revalidatePath("/");
     revalidatePath("/tabel-data");

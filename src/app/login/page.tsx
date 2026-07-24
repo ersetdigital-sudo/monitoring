@@ -44,13 +44,13 @@ export default function LoginPage() {
             className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-extrabold text-white"
             style={{ background: "var(--brand)" }}
           >
-            UT
+            UTM
           </div>
           <h1
             className="text-xl font-extrabold"
             style={{ color: "var(--brand-dark)" }}
           >
-            UNIVERSITAS TERBUKA
+            UNIVERSITAS TERBUKA MAJENE
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">
             Dashboard Monitoring Registrasi Mahasiswa

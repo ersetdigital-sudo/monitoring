@@ -13,7 +13,7 @@ export function DashboardContent() {
     return (
       <div className="space-y-6">
         <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 8 }).map((_, i) => (
+          {Array.from({ length: 11 }).map((_, i) => (
             <div key={i} className="card p-4 animate-pulse">
               <div className="flex items-start gap-3">
                 <div className="w-[46px] h-[46px] rounded-xl bg-slate-100" />
@@ -23,14 +23,6 @@ export function DashboardContent() {
                   <div className="h-3 bg-slate-100 rounded w-24" />
                 </div>
               </div>
-            </div>
-          ))}
-        </section>
-        <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-          {Array.from({ length: 4 }).map((_, i) => (
-            <div key={i} className="card p-4 animate-pulse">
-              <div className="h-4 bg-slate-100 rounded w-32 mb-4" />
-              <div className="h-56 bg-slate-50 rounded" />
             </div>
           ))}
         </section>
@@ -60,8 +52,7 @@ export function DashboardContent() {
         <div className="text-4xl mb-4">📊</div>
         <div className="font-bold text-[var(--ink)] mb-2">Belum Ada Data</div>
         <div className="text-sm text-[var(--muted)] mb-4">
-          Upload file Excel di halaman Pengaturan untuk mulai memantau data
-          registrasi.
+          Upload file Excel di halaman Pengaturan untuk mulai memantau data registrasi.
         </div>
         <a
           href="/pengaturan"
@@ -89,8 +80,14 @@ export function DashboardContent() {
     { title: "PROGRESS TOTAL", value: formatPercent(summary.progress_total), unit: "Pembayaran", sub: "", color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
   ];
 
+  const newStats = [
+    { title: "TARGET MABA", value: formatNumber(summary.target_maba), unit: "Mahasiswa", sub: "Target pendaftaran", color: "#0891b2", bg: "#ecfeff", icon: ICONS.gauge },
+    { title: "REALISASI MABA", value: formatPercent(summary.realisasi_maba), unit: "Pencapaian", sub: `${formatNumber(summary.total_bayar)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
+    { title: "TOTAL BAYAR SPP", value: formatNumber(summary.total_bayar_spp_gabungan), unit: "Maba + Ongoing", sub: "Gabungan SPP", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
+  ];
+
   const top5 = [...data]
-    .sort((a, b) => b.total_bayar_akhir - a.total_bayar_akhir)
+    .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan)
     .slice(0, 5);
 
   const medalConfig = [
@@ -101,7 +98,15 @@ export function DashboardContent() {
 
   return (
     <>
-      {/* Stat Cards — exact HTML match */}
+      {/* Upload info */}
+      {uploadInfo && (
+        <div className="text-xs text-[var(--muted)]">
+          Data dari: <span className="font-semibold">{uploadInfo.nama_file}</span>{" "}
+          — {new Date(uploadInfo.created_at).toLocaleString("id-ID")}
+        </div>
+      )}
+
+      {/* Stat Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
         {stats.map((s) => (
           <div key={s.title} className="card p-4 flex items-start gap-3">
@@ -111,62 +116,55 @@ export function DashboardContent() {
               dangerouslySetInnerHTML={{ __html: s.icon }}
             />
             <div className="min-w-0">
-              <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">
-                {s.title}
-              </div>
-              <div
-                className="text-2xl font-extrabold leading-tight"
-                style={{ color: s.color }}
-              >
-                {s.value}
-              </div>
+              <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">{s.title}</div>
+              <div className="text-2xl font-extrabold leading-tight" style={{ color: s.color }}>{s.value}</div>
               <div className="text-[11px] text-[var(--muted)]">{s.unit}</div>
-              {s.sub && (
-                <div
-                  className="text-[10px] font-semibold mt-0.5"
-                  style={{ color: s.color }}
-                >
-                  {s.sub}
-                </div>
-              )}
+              {s.sub && <div className="text-[10px] font-semibold mt-0.5" style={{ color: s.color }}>{s.sub}</div>}
             </div>
           </div>
         ))}
       </section>
 
-      {/* Charts — 4 kolom, exact match */}
+      {/* New Stats: Target & Realisasi */}
+      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+        {newStats.map((s) => (
+          <div key={s.title} className="card p-4 flex items-start gap-3">
+            <div
+              className="stat-icon"
+              style={{ background: s.bg, color: s.color }}
+              dangerouslySetInnerHTML={{ __html: s.icon }}
+            />
+            <div className="min-w-0">
+              <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">{s.title}</div>
+              <div className="text-2xl font-extrabold leading-tight" style={{ color: s.color }}>{s.value}</div>
+              <div className="text-[11px] text-[var(--muted)]">{s.unit}</div>
+              {s.sub && <div className="text-[10px] font-semibold mt-0.5" style={{ color: s.color }}>{s.sub}</div>}
+            </div>
+          </div>
+        ))}
+      </section>
+
+      {/* Charts */}
       <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
         <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">
-            Perbandingan Admisi per SALUT
-          </h3>
-          <div className="h-56">
-            <BarChartSalut data={data} />
-          </div>
+          <h3 className="text-sm font-bold mb-1">Perbandingan Admisi per SALUT</h3>
+          <div className="h-56"><BarChartSalut data={data} /></div>
         </div>
         <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Komposisi Pembayaran</h3>
-          <div className="h-56">
-            <DonutBayar data={data} />
-          </div>
+          <div className="h-56"><DonutBayar data={data} /></div>
         </div>
         <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Progress Registrasi</h3>
-          <div className="h-56">
-            <DonutProgress data={data} />
-          </div>
+          <div className="h-56"><DonutProgress data={data} /></div>
         </div>
         <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">
-            Top 10 SALUT (Berdasarkan Admisi)
-          </h3>
-          <div className="h-56">
-            <BarChartTop10 data={data} />
-          </div>
+          <h3 className="text-sm font-bold mb-1">Top 10 SALUT (Berdasarkan Admisi)</h3>
+          <div className="h-56"><BarChartTop10 data={data} /></div>
         </div>
       </section>
 
-      {/* Table + Ranking — exact match */}
+      {/* Table + Ranking */}
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <div className="card p-4 xl:col-span-2 overflow-hidden">
           <h3 className="text-sm font-bold mb-3">Data Registrasi per SALUT</h3>
@@ -176,13 +174,12 @@ export function DashboardContent() {
                 <tr className="text-[var(--muted)] border-b border-[var(--line)]">
                   <th className="py-2 pr-3 font-semibold">NO</th>
                   <th className="py-2 pr-3 font-semibold">SALUT</th>
-                  <th className="py-2 pr-3 font-semibold">ADMISI</th>
-                  <th className="py-2 pr-3 font-semibold">BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold">BELUM BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold">DAPAT NIM</th>
-                  <th className="py-2 pr-3 font-semibold">REG MTK</th>
-                  <th className="py-2 pr-3 font-semibold">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold">TOTAL BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">ADMISI</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">BELUM</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">NIM</th>
+                  <th className="py-2 pr-3 font-semibold bg-orange-50">ONGOING</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-50">TOTAL BAYAR</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
@@ -190,21 +187,12 @@ export function DashboardContent() {
                   <tr key={r.id} className="hover:bg-slate-50">
                     <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
                     <td className="py-2.5 pr-3 font-semibold">{r.nama_salut}</td>
-                    <td className="py-2.5 pr-3">{formatNumber(r.total_admisi)}</td>
-                    <td className="py-2.5 pr-3 text-emerald-600 font-semibold">
-                      {formatNumber(r.admisi_bayar)}
-                    </td>
-                    <td className="py-2.5 pr-3 text-rose-600">
-                      {formatNumber(r.admisi_belum_bayar)}
-                    </td>
-                    <td className="py-2.5 pr-3">{formatNumber(r.dapat_nim)}</td>
-                    <td className="py-2.5 pr-3">
-                      {formatNumber(r.total_admisi - r.belum_registrasi_mtk)}
-                    </td>
-                    <td className="py-2.5 pr-3">{formatNumber(r.ongoing_total)}</td>
-                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)]">
-                      {formatNumber(r.total_bayar_akhir)}
-                    </td>
+                    <td className="py-2.5 pr-3 bg-blue-50/30">{formatNumber(r.total_admisi)}</td>
+                    <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50/30">{formatNumber(r.maba_bayar_admisi)}</td>
+                    <td className="py-2.5 pr-3 text-rose-600 bg-blue-50/30">{formatNumber(r.maba_belum_bayar_admisi)}</td>
+                    <td className="py-2.5 pr-3 bg-blue-50/30">{formatNumber(r.dapat_nim)}</td>
+                    <td className="py-2.5 pr-3 bg-orange-50/30">{formatNumber(r.ongoing_total_registrasi)}</td>
+                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)] bg-slate-50/30">{formatNumber(r.total_bayar_spp_gabungan)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -213,75 +201,35 @@ export function DashboardContent() {
         </div>
 
         <div className="card p-4">
-          <h3 className="text-sm font-bold mb-3">
-            Ranking SALUT (Berdasarkan Total Bayar)
-          </h3>
+          <h3 className="text-sm font-bold mb-3">Ranking SALUT</h3>
           <ul className="space-y-2.5">
             {top5.map((r, i) => {
               const rank = i + 1;
               const medal = i < 3 ? medalConfig[i] : { bg: "#e2e8f0", color: "#64748b" };
-
               return (
-                <li
-                  key={r.id}
-                  className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50"
-                >
-                  <span
-                    className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold"
-                    style={{ background: medal.bg, color: medal.color }}
-                  >
-                    {rank <= 3 ? (
-                      <span
-                        dangerouslySetInnerHTML={{ __html: ICONS.trophy }}
-                        className="[&>svg]:w-4 [&>svg]:h-4"
-                      />
-                    ) : (
-                      rank
-                    )}
+                <li key={r.id} className="flex items-center gap-3 p-2.5 rounded-xl bg-slate-50">
+                  <span className="w-7 h-7 rounded-full flex items-center justify-center text-xs font-bold" style={{ background: medal.bg, color: medal.color }}>
+                    {rank <= 3 ? <span dangerouslySetInnerHTML={{ __html: ICONS.trophy }} className="[&>svg]:w-4 [&>svg]:h-4" /> : rank}
                   </span>
-                  <span className="text-xs font-semibold flex-1 truncate">
-                    {r.nama_salut}
-                  </span>
-                  <span className="text-sm font-extrabold text-[var(--brand)]">
-                    {formatNumber(r.total_bayar_akhir)}
-                  </span>
+                  <span className="text-xs font-semibold flex-1 truncate">{r.nama_salut}</span>
+                  <span className="text-sm font-extrabold text-[var(--brand)]">{formatNumber(r.total_bayar_spp_gabungan)}</span>
                 </li>
               );
             })}
           </ul>
-          <a
-            href="/ranking-salut"
-            className="block w-full mt-4 text-xs font-semibold text-center text-[var(--brand)] border border-[var(--brand)]/30 rounded-lg py-2 hover:bg-[var(--brand)]/5"
-          >
+          <a href="/ranking-salut" className="block w-full mt-4 text-xs font-semibold text-center text-[var(--brand)] border border-[var(--brand)]/30 rounded-lg py-2 hover:bg-[var(--brand)]/5">
             Lihat Ranking Lengkap →
           </a>
         </div>
       </section>
 
-      {/* Action Bar — exact match */}
+      {/* Action Bar */}
       <section className="card p-3 flex flex-wrap items-center justify-between gap-3">
-        <span className="text-xs text-[var(--muted)]">
-          Menampilkan 1 - {data.length} dari {data.length} data
-        </span>
+        <span className="text-xs text-[var(--muted)]">Menampilkan 1 - {data.length} dari {data.length} data</span>
         <div className="flex flex-wrap gap-2">
-          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-emerald-600 text-white flex items-center gap-2">
-            <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
-              <path d="M213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66ZM128 192a8 8 0 0 1-5.66-2.34l-32-32a8 8 0 0 1 11.32-11.32L120 164.69V112a8 8 0 0 1 16 0v52.69l18.34-18.35a8 8 0 0 1 11.32 11.32l-32 32A8 8 0 0 1 128 192Z" />
-            </svg>
-            Export Excel
-          </button>
-          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-rose-600 text-white flex items-center gap-2">
-            <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
-              <path d="M213.66 82.34l-56-56A8 8 0 0 0 152 24H56a16 16 0 0 0-16 16v176a16 16 0 0 0 16 16h144a16 16 0 0 0 16-16V88a8 8 0 0 0-2.34-5.66ZM128 192a8 8 0 0 1-5.66-2.34l-32-32a8 8 0 0 1 11.32-11.32L120 164.69V112a8 8 0 0 1 16 0v52.69l18.34-18.35a8 8 0 0 1 11.32 11.32l-32 32A8 8 0 0 1 128 192Z" />
-            </svg>
-            Export PDF
-          </button>
-          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-slate-700 text-white flex items-center gap-2">
-            <svg className="w-4 h-4" viewBox="0 0 256 256" fill="currentColor">
-              <path d="M214.67 72H200V40a8 8 0 0 0-8-8H64a8 8 0 0 0-8 8v32H41.33C27.36 72 16 82.77 16 96v80a8 8 0 0 0 8 8h32v32a8 8 0 0 0 8 8h128a8 8 0 0 0 8-8v-32h32a8 8 0 0 0 8-8V96c0-13.23-11.36-24-25.33-24ZM72 48h112v24H72Zm112 160H72v-48h112Zm16-56a12 12 0 1 1 12-12 12 12 0 0 1-12 12Z" />
-            </svg>
-            Print
-          </button>
+          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-emerald-600 text-white">Export Excel</button>
+          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-rose-600 text-white">Export PDF</button>
+          <button className="text-xs font-semibold rounded-lg px-4 py-2 bg-slate-700 text-white">Print</button>
         </div>
       </section>
     </>

@@ -12,26 +12,21 @@ export default function LaporanPage() {
   useEffect(() => {
     fetch("/api/data")
       .then((r) => r.json())
-      .then((json) => {
-        setData(json.data || []);
-        setUpload(json.upload || null);
-        setLoading(false);
-      })
+      .then((json) => { setData(json.data || []); setUpload(json.upload || null); setLoading(false); })
       .catch(() => setLoading(false));
   }, []);
 
-  if (loading) {
-    return (
-      <div className="card p-6 animate-pulse h-96" />
-    );
-  }
+  if (loading) return <div className="card p-6 animate-pulse h-96" />;
 
   const totalAdmisi = data.reduce((s, d) => s + d.total_admisi, 0);
-  const totalBayar = data.reduce((s, d) => s + d.admisi_bayar, 0);
-  const totalBelum = data.reduce((s, d) => s + d.admisi_belum_bayar, 0);
+  const totalBayar = data.reduce((s, d) => s + d.maba_bayar_admisi, 0);
+  const totalBelum = data.reduce((s, d) => s + d.maba_belum_bayar_admisi, 0);
   const totalNim = data.reduce((s, d) => s + d.dapat_nim, 0);
   const totalRegMtk = data.reduce((s, d) => s + (d.total_admisi - d.belum_registrasi_mtk), 0);
-  const totalOngoing = data.reduce((s, d) => s + d.ongoing_total, 0);
+  const totalOngoing = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
+  const targetMaba = data.reduce((s, d) => s + d.target_maba, 0);
+  const totalMabaBayarSpp = data.reduce((s, d) => s + d.maba_registrasi_bayar_spp, 0);
+  const realisasi = targetMaba > 0 ? totalMabaBayarSpp / targetMaba : 0;
 
   const handlePrint = () => window.print();
 
@@ -48,12 +43,13 @@ export default function LaporanPage() {
       `Dapat NIM,${totalNim}`,
       `Registrasi MTK,${totalRegMtk}`,
       `Ongoing,${totalOngoing}`,
-      `Progress Total,${formatPercent(totalAdmisi > 0 ? (totalBayar / totalAdmisi) * 100 : 0)}`,
+      `Target Maba,${targetMaba}`,
+      `Realisasi Maba,${formatPercent(realisasi)}`,
       "",
       "DATA PER SALUT",
-      "SALUT,ADMISI,BAYAR,BELUM BAYAR,NIM,REG MTK,ONGOING,TOTAL BAYAR",
+      "SALUT,ADMISI,BAYAR,BELUM,NIM,REG MTK,ONGOING,TOTAL BAYAR SPP,TARGET,REALISASI",
       ...data.map((d) =>
-        `${d.nama_salut},${d.total_admisi},${d.admisi_bayar},${d.admisi_belum_bayar},${d.dapat_nim},${d.total_admisi - d.belum_registrasi_mtk},${d.ongoing_total},${d.total_bayar_akhir}`
+        `${d.nama_salut},${d.total_admisi},${d.maba_bayar_admisi},${d.maba_belum_bayar_admisi},${d.dapat_nim},${d.total_admisi - d.belum_registrasi_mtk},${d.ongoing_total_registrasi},${d.total_bayar_spp_gabungan},${d.target_maba},${formatPercent(d.realisasi_maba)}`
       ),
     ].join("\n");
 
@@ -69,57 +65,34 @@ export default function LaporanPage() {
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
-        <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">
-          Laporan
-        </h2>
+        <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Laporan</h2>
         <div className="flex gap-2">
-          <button
-            onClick={handleExport}
-            className="text-xs font-semibold rounded-lg px-4 py-2 bg-emerald-600 text-white"
-          >
-            Export CSV
-          </button>
-          <button
-            onClick={handlePrint}
-            className="text-xs font-semibold rounded-lg px-4 py-2 bg-slate-700 text-white"
-          >
-            Print
-          </button>
+          <button onClick={handleExport} className="text-xs font-semibold rounded-lg px-4 py-2 bg-emerald-600 text-white">Export CSV</button>
+          <button onClick={handlePrint} className="text-xs font-semibold rounded-lg px-4 py-2 bg-slate-700 text-white">Print</button>
         </div>
       </div>
 
-      {/* Report Card */}
       <div className="card p-6 space-y-6 print:shadow-none">
-        {/* Header */}
         <div className="text-center border-b border-[var(--line)] pb-4">
-          <h1 className="text-lg font-extrabold text-[var(--brand-dark)]">
-            LAPORAN RINGKAS
-          </h1>
-          <h2 className="text-sm font-semibold text-[var(--ink)]">
-            Dashboard Monitoring Registrasi Mahasiswa
-          </h2>
-          <p className="text-xs text-[var(--muted)] mt-1">
-            Universitas Terbuka — {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}
-          </p>
-          {upload && (
-            <p className="text-xs text-[var(--muted)]">
-              Sumber: {upload.nama_file} — {new Date(upload.created_at).toLocaleString("id-ID")}
-            </p>
-          )}
+          <h1 className="text-lg font-extrabold text-[var(--brand-dark)]">LAPORAN RINGKAS</h1>
+          <h2 className="text-sm font-semibold text-[var(--ink)]">Dashboard Monitoring Registrasi Mahasiswa</h2>
+          <p className="text-xs text-[var(--muted)] mt-1">Universitas Terbuka Majene — {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+          {upload && <p className="text-xs text-[var(--muted)]">Sumber: {upload.nama_file} — {new Date(upload.created_at).toLocaleString("id-ID")}</p>}
         </div>
 
-        {/* Summary Table */}
         <div>
           <h3 className="text-sm font-bold mb-3">Ringkasan Keseluruhan</h3>
           <table className="w-full text-xs border-collapse">
             <tbody className="divide-y divide-[var(--line)]">
               {[
                 ["Total Admisi", formatNumber(totalAdmisi), "100%"],
-                ["Total Bayar", formatNumber(totalBayar), formatPercent(totalAdmisi > 0 ? (totalBayar / totalAdmisi) * 100 : 0)],
-                ["Belum Bayar", formatNumber(totalBelum), formatPercent(totalAdmisi > 0 ? (totalBelum / totalAdmisi) * 100 : 0)],
-                ["Dapat NIM", formatNumber(totalNim), formatPercent(totalAdmisi > 0 ? (totalNim / totalAdmisi) * 100 : 0)],
-                ["Registrasi MTK", formatNumber(totalRegMtk), formatPercent(totalAdmisi > 0 ? (totalRegMtk / totalAdmisi) * 100 : 0)],
-                ["Ongoing", formatNumber(totalOngoing), formatPercent(totalAdmisi > 0 ? (totalOngoing / totalAdmisi) * 100 : 0)],
+                ["Total Bayar", formatNumber(totalBayar), formatPercent(totalAdmisi > 0 ? totalBayar / totalAdmisi : 0)],
+                ["Belum Bayar", formatNumber(totalBelum), formatPercent(totalAdmisi > 0 ? totalBelum / totalAdmisi : 0)],
+                ["Dapat NIM", formatNumber(totalNim), formatPercent(totalAdmisi > 0 ? totalNim / totalAdmisi : 0)],
+                ["Registrasi MTK", formatNumber(totalRegMtk), formatPercent(totalAdmisi > 0 ? totalRegMtk / totalAdmisi : 0)],
+                ["Ongoing", formatNumber(totalOngoing), formatPercent(totalAdmisi > 0 ? totalOngoing / totalAdmisi : 0)],
+                ["Target Maba", formatNumber(targetMaba), ""],
+                ["Realisasi Maba", formatPercent(realisasi), ""],
               ].map(([label, value, pct]) => (
                 <tr key={String(label)} className="hover:bg-slate-50">
                   <td className="py-2 pr-3 font-semibold">{label}</td>
@@ -131,7 +104,6 @@ export default function LaporanPage() {
           </table>
         </div>
 
-        {/* Detail per SALUT */}
         <div>
           <h3 className="text-sm font-bold mb-3">Detail per SALUT</h3>
           <div className="overflow-x-auto scroll-thin">
@@ -140,13 +112,14 @@ export default function LaporanPage() {
                 <tr className="text-[var(--muted)] border-b border-[var(--line)]">
                   <th className="py-2 pr-3 font-semibold">NO</th>
                   <th className="py-2 pr-3 font-semibold">SALUT</th>
-                  <th className="py-2 pr-3 font-semibold">ADMISI</th>
-                  <th className="py-2 pr-3 font-semibold">BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold">BELUM</th>
-                  <th className="py-2 pr-3 font-semibold">NIM</th>
-                  <th className="py-2 pr-3 font-semibold">REG MTK</th>
-                  <th className="py-2 pr-3 font-semibold">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold">TOTAL BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">ADMISI</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">BELUM</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">NIM</th>
+                  <th className="py-2 pr-3 font-semibold bg-orange-50">ONGOING</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-50">TOTAL SPP</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-50">TARGET</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-50">REALISASI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
@@ -154,13 +127,14 @@ export default function LaporanPage() {
                   <tr key={d.id} className="hover:bg-slate-50">
                     <td className="py-2 pr-3 text-[var(--muted)]">{i + 1}</td>
                     <td className="py-2 pr-3 font-semibold">{d.nama_salut}</td>
-                    <td className="py-2 pr-3">{formatNumber(d.total_admisi)}</td>
-                    <td className="py-2 pr-3 text-emerald-600">{formatNumber(d.admisi_bayar)}</td>
-                    <td className="py-2 pr-3 text-rose-600">{formatNumber(d.admisi_belum_bayar)}</td>
-                    <td className="py-2 pr-3">{formatNumber(d.dapat_nim)}</td>
-                    <td className="py-2 pr-3">{formatNumber(d.total_admisi - d.belum_registrasi_mtk)}</td>
-                    <td className="py-2 pr-3">{formatNumber(d.ongoing_total)}</td>
-                    <td className="py-2 pr-3 font-semibold">{formatNumber(d.total_bayar_akhir)}</td>
+                    <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.total_admisi)}</td>
+                    <td className="py-2 pr-3 text-emerald-600 bg-blue-50/30">{formatNumber(d.maba_bayar_admisi)}</td>
+                    <td className="py-2 pr-3 text-rose-600 bg-blue-50/30">{formatNumber(d.maba_belum_bayar_admisi)}</td>
+                    <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.dapat_nim)}</td>
+                    <td className="py-2 pr-3 bg-orange-50/30">{formatNumber(d.ongoing_total_registrasi)}</td>
+                    <td className="py-2 pr-3 font-bold text-[var(--brand)] bg-slate-50/30">{formatNumber(d.total_bayar_spp_gabungan)}</td>
+                    <td className="py-2 pr-3 bg-slate-50/30">{formatNumber(d.target_maba)}</td>
+                    <td className="py-2 pr-3 font-semibold text-emerald-700 bg-slate-50/30">{formatPercent(d.realisasi_maba)}</td>
                   </tr>
                 ))}
               </tbody>
@@ -168,9 +142,8 @@ export default function LaporanPage() {
           </div>
         </div>
 
-        {/* Footer */}
         <div className="text-center text-[11px] text-[var(--muted)] pt-4 border-t border-[var(--line)]">
-          Dashboard Monitoring Registrasi Mahasiswa v1.0.0 — Universitas Terbuka
+          Dashboard Monitoring Registrasi Mahasiswa v1.0.0 — Universitas Terbuka Majene
         </div>
       </div>
     </div>

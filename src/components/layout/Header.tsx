@@ -37,7 +37,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           </h1>
           <p className="text-xs sm:text-sm text-[var(--muted)]">
             Selamat datang di Dashboard Monitoring Registrasi Mahasiswa
-            Universitas Terbuka
+            Universitas Terbuka Majene
           </p>
         </div>
       </div>

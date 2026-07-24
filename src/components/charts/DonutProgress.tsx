@@ -10,8 +10,9 @@ interface Props {
 
 export function DonutProgress({ data }: Props) {
   const totalAdmisi = data.reduce((s, d) => s + d.total_admisi, 0);
-  const totalBayar = data.reduce((s, d) => s + d.admisi_bayar, 0);
-  const percent = totalAdmisi > 0 ? (totalBayar / totalAdmisi) * 100 : 0;
+  const totalBayar = data.reduce((s, d) => s + d.maba_bayar_admisi, 0);
+  const percentDecimal = totalAdmisi > 0 ? totalBayar / totalAdmisi : 0;
+  const percent = percentDecimal * 100;
 
   const chartData = [
     { name: "Progress", value: percent },
@@ -39,7 +40,7 @@ export function DonutProgress({ data }: Props) {
       </ResponsiveContainer>
       <div className="absolute text-center">
         <div className="text-2xl font-extrabold text-[var(--brand)]">
-          {formatPercent(percent)}
+          {formatPercent(percentDecimal)}
         </div>
       </div>
     </div>

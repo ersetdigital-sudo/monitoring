@@ -87,14 +87,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         {/* === ZONA ATAS: Logo === */}
         <div className="flex-shrink-0 px-5 py-4 flex items-center gap-3 border-b border-white/10">
           <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[var(--brand)] font-extrabold text-sm">
-            UT
+            UTM
           </div>
           <div className="leading-tight">
             <div className="text-[13px] font-extrabold tracking-wide">
-              UNIVERSITAS TERBUKA
+              UNIVERSITAS TERBUKA MAJENE
             </div>
             <div className="text-[9px] text-white/60 italic">
-              Making Higher Education Open to All
+              Kuliah OK, Kerja OK!
             </div>
           </div>
           <button

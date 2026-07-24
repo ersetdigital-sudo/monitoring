@@ -15,8 +15,8 @@ interface Props {
 }
 
 export function DonutBayar({ data }: Props) {
-  const totalBayar = data.reduce((s, d) => s + d.admisi_bayar, 0);
-  const totalBelum = data.reduce((s, d) => s + d.admisi_belum_bayar, 0);
+  const totalBayar = data.reduce((s, d) => s + d.maba_bayar_admisi, 0);
+  const totalBelum = data.reduce((s, d) => s + d.maba_belum_bayar_admisi, 0);
 
   const chartData = [
     { name: "Sudah Bayar", value: totalBayar },

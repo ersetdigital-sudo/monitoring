@@ -62,8 +62,9 @@ export function parseExcelBuffer(buffer: Buffer): ParsedExcelResult {
     const ongoingTotal = toNum(row[11]);
     const totalBayarGabungan = toNum(row[12]);
 
-    // target_maba: default 100 per SALUT (configurable via upload API)
-    const targetMaba = 100;
+    // target_maba: 100 per SALUT (exclude TIDAK TERDETEKSI)
+    const isNonTarget = nama.toUpperCase().includes("TIDAK TERDETEKSI");
+    const targetMaba = isNonTarget ? 0 : 100;
     const realisasi = targetMaba > 0 ? mabaRegBayar / targetMaba : 0;
 
     const parsed: ParsedRow = {

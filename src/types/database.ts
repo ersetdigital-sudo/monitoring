@@ -56,6 +56,7 @@ export interface DashboardSummary {
   // New
   target_maba: number;
   realisasi_maba: number; // aggregate %
+  total_maba_bayar_spp: number;
   total_bayar_spp_gabungan: number;
 }
 

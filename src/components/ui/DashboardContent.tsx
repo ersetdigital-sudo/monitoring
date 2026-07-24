@@ -82,7 +82,7 @@ export function DashboardContent() {
 
   const newStats = [
     { title: "TARGET MABA", value: formatNumber(summary.target_maba), unit: "Mahasiswa", sub: "Target pendaftaran", color: "#0891b2", bg: "#ecfeff", icon: ICONS.gauge },
-    { title: "REALISASI MABA", value: formatPercent(summary.realisasi_maba), unit: "Pencapaian", sub: `${formatNumber(summary.total_bayar)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
+    { title: "REALISASI MABA", value: formatPercent(summary.realisasi_maba), unit: "Pencapaian", sub: `${formatNumber(summary.total_maba_bayar_spp)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
     { title: "TOTAL BAYAR SPP", value: formatNumber(summary.total_bayar_spp_gabungan), unit: "Maba + Ongoing", sub: "Gabungan SPP", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 
@@ -167,7 +167,13 @@ export function DashboardContent() {
       {/* Table + Ranking */}
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <div className="card p-4 xl:col-span-2 overflow-hidden">
-          <h3 className="text-sm font-bold mb-3">Data Registrasi per SALUT</h3>
+          <h3 className="text-sm font-bold mb-2">Data Registrasi per SALUT</h3>
+          {/* Legend */}
+          <div className="flex flex-wrap items-center gap-3 mb-3 text-[10px]">
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-200 border border-blue-300" />Maba</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-200 border border-orange-300" />Ongoing</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-slate-200 border border-slate-300" />Gabungan</span>
+          </div>
           <div className="overflow-x-auto scroll-thin">
             <table className="w-full text-xs text-left border-collapse">
               <thead>

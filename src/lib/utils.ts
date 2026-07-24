@@ -10,8 +10,8 @@ export function calculateSummary(data: SalutData[]): DashboardSummary {
     0
   );
   const ongoing = data.reduce((sum, d) => sum + d.ongoing_total_registrasi, 0);
-  const progress_total =
-    total_admisi > 0 ? Math.round((total_bayar / total_admisi) * 10000) / 100 : 0;
+  // Store as decimal (0-1), formatPercent will handle ×100
+  const progress_total = total_admisi > 0 ? total_bayar / total_admisi : 0;
 
   // New fields
   const target_maba = data.reduce((sum, d) => sum + d.target_maba, 0);
@@ -29,6 +29,7 @@ export function calculateSummary(data: SalutData[]): DashboardSummary {
     progress_total,
     target_maba,
     realisasi_maba,
+    total_maba_bayar_spp,
     total_bayar_spp_gabungan,
   };
 }

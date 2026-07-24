@@ -62,8 +62,8 @@ export function parseExcelBuffer(buffer: Buffer): ParsedExcelResult {
     const ongoingTotal = toNum(row[11]);
     const totalBayarGabungan = toNum(row[12]);
 
-    // target_maba not in Excel — set to 0, user can configure later
-    const targetMaba = 0;
+    // target_maba: default 100 per SALUT (configurable via upload API)
+    const targetMaba = 100;
     const realisasi = targetMaba > 0 ? mabaRegBayar / targetMaba : 0;
 
     const parsed: ParsedRow = {

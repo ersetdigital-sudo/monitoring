@@ -83,12 +83,12 @@ ALTER TABLE uploads ENABLE ROW LEVEL SECURITY;
 ALTER TABLE salut_data ENABLE ROW LEVEL SECURITY;
 ALTER TABLE user_profiles ENABLE ROW LEVEL SECURITY;
 
--- Policy: semua user login bisa baca
-CREATE POLICY "Authenticated users can read uploads"
-  ON uploads FOR SELECT TO authenticated USING (true);
+-- Policy: publik (termasuk anon/tanpa login) bisa baca data dashboard
+CREATE POLICY "Public can read uploads"
+  ON uploads FOR SELECT USING (true);
 
-CREATE POLICY "Authenticated users can read salut_data"
-  ON salut_data FOR SELECT TO authenticated USING (true);
+CREATE POLICY "Public can read salut_data"
+  ON salut_data FOR SELECT USING (true);
 
 CREATE POLICY "Users can read own profile"
   ON user_profiles FOR SELECT TO authenticated USING (auth.uid() = id);

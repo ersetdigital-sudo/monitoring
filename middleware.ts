@@ -33,17 +33,21 @@ export async function middleware(request: NextRequest) {
     data: { user },
   } = await supabase.auth.getUser();
 
-  const isLoginRoute = request.nextUrl.pathname === "/login";
+  const pathname = request.nextUrl.pathname;
+  const isLoginRoute = pathname === "/login";
+  const isPengaturanRoute = pathname === "/pengaturan" || pathname.startsWith("/pengaturan/");
 
-  if (!user && !isLoginRoute) {
+  // Hanya /pengaturan yang wajib login
+  if (!user && isPengaturanRoute) {
     const url = request.nextUrl.clone();
     url.pathname = "/login";
     return NextResponse.redirect(url);
   }
 
+  // Setelah login, redirect ke /pengaturan (bukan /)
   if (user && isLoginRoute) {
     const url = request.nextUrl.clone();
-    url.pathname = "/";
+    url.pathname = "/pengaturan";
     return NextResponse.redirect(url);
   }
 

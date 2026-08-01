@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber, formatPercent, displaySalutName } from "@/lib/utils";
+import { formatNumber, formatPercent, displaySalutName, isNonSalut } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { AnimatedBar } from "@/components/ui/AnimatedBar";
@@ -19,6 +19,11 @@ export default function DataSalutPage() {
   }
 
   const totalAdmisi = data.reduce((s, d) => s + d.total_admisi, 0);
+  const totalSalut = data.filter((d) => !isNonSalut(d.nama_salut)).length;
+
+  const sortedData = [...data].sort(
+    (a, b) => (isNonSalut(a.nama_salut) ? 1 : 0) - (isNonSalut(b.nama_salut) ? 1 : 0)
+  );
 
   return (
     <div className="space-y-6">
@@ -45,7 +50,7 @@ export default function DataSalutPage() {
       <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">TOTAL SALUT</div>
-          <AnimatedNumber value={data.length} className="text-2xl font-extrabold text-[var(--brand)]" />
+          <AnimatedNumber value={totalSalut} className="text-2xl font-extrabold text-[var(--brand)]" />
           <div className="text-[11px] text-[var(--muted)]">SALUT terdaftar</div>
         </div>
         <div className="card p-4">
@@ -57,7 +62,7 @@ export default function DataSalutPage() {
 
       {/* Cards per SALUT */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        {data.map((d) => {
+        {sortedData.map((d) => {
           const realisasiPct = d.target_maba > 0 ? (d.maba_registrasi_bayar_spp / d.target_maba) * 100 : 0;
           return (
             <div key={d.id} className="card p-4 space-y-3">

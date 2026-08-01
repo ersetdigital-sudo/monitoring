@@ -165,7 +165,18 @@ export function DashboardContent() {
     target: d.target_maba,
   }));
   const previewBayarSpp = data.reduce((s, d) => s + d.total_bayar_spp_gabungan, 0);
-  const previewTargetTotal = data.reduce((s, d) => s + d.target_maba, 0);
+  const previewTotalRegistrasi = data.reduce(
+    (s, d) => s + d.maba_registrasi_total + d.ongoing_total_registrasi,
+    0
+  );
+
+  const tableRows = useMemo(
+    () =>
+      [...data].sort(
+        (a, b) => (isNonSalut(a.nama_salut) ? 1 : 0) - (isNonSalut(b.nama_salut) ? 1 : 0)
+      ),
+    [data]
+  );
 
   const medalConfig = [
     { bg: "#facc15", color: "#7a5c00" },
@@ -224,13 +235,13 @@ export function DashboardContent() {
         />
         <DonutCard
           title="Progress Total Bayar SPP"
-          subtitle={`Terhadap Target Maba (${formatNumber(previewTargetTotal)})`}
+          subtitle={`Terhadap Total Registrasi (${formatNumber(previewTotalRegistrasi)})`}
           heightClass="h-44"
           centerValue={previewBayarSpp}
           centerLabel="Total Bayar SPP"
           segments={[
             { name: "Bayar SPP", value: previewBayarSpp, fill: "#16a34a" },
-            { name: "Sisa Target", value: Math.max(previewTargetTotal - previewBayarSpp, 0), fill: "#ef4444" },
+            { name: "Sisa Registrasi", value: Math.max(previewTotalRegistrasi - previewBayarSpp, 0), fill: "#ef4444" },
           ]}
         />
       </section>
@@ -238,7 +249,7 @@ export function DashboardContent() {
       {/* Table + Ranking */}
       <section className="grid grid-cols-1 xl:grid-cols-3 gap-5">
         <div className="card p-4 xl:col-span-2 overflow-hidden">
-          <h3 className="text-sm font-bold mb-2">Data Registrasi per SALUT</h3>
+          <h3 className="text-sm font-bold mb-2">Capaian Maba Per SALUT</h3>
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-3 mb-3 text-[10px]">
             <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-200 border border-blue-300" />Maba (Baru)</span>
@@ -259,7 +270,7 @@ export function DashboardContent() {
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
-                {data.map((r, i) => {
+                {tableRows.map((r, i) => {
                   const pct = r.target_maba > 0 ? (r.maba_registrasi_bayar_spp / r.target_maba) * 100 : 0;
                   return (
                     <tr key={r.id} className="hover:bg-slate-50">

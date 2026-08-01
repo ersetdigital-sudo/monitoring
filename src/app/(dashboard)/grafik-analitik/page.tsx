@@ -24,8 +24,8 @@ export default function GrafikAnalitikPage() {
   const totalOngoingBayar = sum("ongoing_bayar_spp");
   const totalOngoingBelum = sum("ongoing_belum_bayar_spp");
   const totalBayarSpp = sum("total_bayar_spp_gabungan");
-  const totalTarget = sum("target_maba");
-  const sisaTarget = Math.max(totalTarget - totalBayarSpp, 0);
+  const totalRegistrasi = sum("maba_registrasi_total") + sum("ongoing_total_registrasi");
+  const sisaRegistrasi = Math.max(totalRegistrasi - totalBayarSpp, 0);
 
   const shortName = (d: SalutData) => d.nama_salut.replace("SALUT ", "").substring(0, 12);
 
@@ -124,12 +124,12 @@ export default function GrafikAnalitikPage() {
         />
         <DonutCard
           title="Progress Total Bayar SPP"
-          subtitle={`Terhadap Target Maba (${formatNumber(totalTarget)})`}
+          subtitle={`Terhadap Total Registrasi (${formatNumber(totalRegistrasi)})`}
           centerValue={totalBayarSpp}
           centerLabel="Total Bayar SPP"
           segments={[
             { name: "Bayar SPP", value: totalBayarSpp, fill: "#16a34a" },
-            { name: "Sisa Target", value: sisaTarget, fill: "#ef4444" },
+            { name: "Sisa Registrasi", value: sisaRegistrasi, fill: "#ef4444" },
           ]}
         />
       </div>

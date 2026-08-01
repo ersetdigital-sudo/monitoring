@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { SalutData } from "@/types/database";
-import { formatNumber, displaySalutName } from "@/lib/utils";
+import { formatNumber, displaySalutName, isNonSalut } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 
 export default function TabelDataPage() {
@@ -30,6 +30,9 @@ export default function TabelDataPage() {
       result = result.filter((d) => d.nama_salut.toLowerCase().includes(q));
     }
     result.sort((a, b) => {
+      const aNon = isNonSalut(a.nama_salut) ? 1 : 0;
+      const bNon = isNonSalut(b.nama_salut) ? 1 : 0;
+      if (aNon !== bNon) return aNon - bNon;
       if (sortKey === "realisasi") {
         const av = a.target_maba > 0 ? a.maba_registrasi_bayar_spp / a.target_maba : 0;
         const bv = b.target_maba > 0 ? b.maba_registrasi_bayar_spp / b.target_maba : 0;

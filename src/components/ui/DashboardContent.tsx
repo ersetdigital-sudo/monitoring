@@ -101,7 +101,7 @@ export function DashboardContent() {
       {/* Upload info */}
       {uploadInfo && (
         <div className="text-xs text-[var(--muted)]">
-          Data dari: <span className="font-semibold">{uploadInfo.nama_file}</span>{" "}
+          Data dari: <span className="font-semibold">{uploadInfo.nama_file.replace(/\.xlsx$/i, "")}</span>{" "}
           — {new Date(uploadInfo.created_at).toLocaleString("id-ID")}
         </div>
       )}

@@ -34,7 +34,7 @@ export default function LaporanPage() {
     const summary = [
       "LAPORAN RINGKAS DASHBOARD MONITORING REGISTRASI MAHASISWA",
       `Tanggal: ${new Date().toLocaleString("id-ID")}`,
-      upload ? `Sumber Data: ${upload.nama_file}` : "",
+      upload ? `Sumber Data: ${upload.nama_file.replace(/\.xlsx$/i, "")}` : "",
       "",
       "RINGKASAN,",
       `Total Admisi,${totalAdmisi}`,
@@ -77,7 +77,7 @@ export default function LaporanPage() {
           <h1 className="text-lg font-extrabold text-[var(--brand-dark)]">LAPORAN RINGKAS</h1>
           <h2 className="text-sm font-semibold text-[var(--ink)]">Dashboard Monitoring Registrasi Mahasiswa</h2>
           <p className="text-xs text-[var(--muted)] mt-1">Universitas Terbuka Majene — {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
-          {upload && <p className="text-xs text-[var(--muted)]">Sumber: {upload.nama_file} — {new Date(upload.created_at).toLocaleString("id-ID")}</p>}
+          {upload && <p className="text-xs text-[var(--muted)]">Sumber: {upload.nama_file.replace(/\.xlsx$/i, "")} — {new Date(upload.created_at).toLocaleString("id-ID")}</p>}
         </div>
 
         <div>

@@ -153,7 +153,7 @@ export function DashboardContent() {
     .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan)
     .slice(0, 5);
 
-  const shortName = (d: typeof data[number]) => d.nama_salut.replace("SALUT ", "").substring(0, 12);
+  const shortName = (d: typeof data[number]) => displaySalutName(d.nama_salut).replace("SALUT ", "").substring(0, 12);
   const sortedData = [...data].sort((a, b) => b.total_admisi - a.total_admisi);
   const previewTotalBayar = sortedData.map((d) => ({
     name: shortName(d),

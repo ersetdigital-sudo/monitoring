@@ -1,7 +1,7 @@
 "use client";
 
 import type { SalutData } from "@/types/database";
-import { formatNumber, formatPercent } from "@/lib/utils";
+import { formatNumber, formatPercent, displaySalutName } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { BarChartCard, GroupedBarChartCard, DonutCard } from "@/components/charts";
@@ -27,7 +27,7 @@ export default function GrafikAnalitikPage() {
   const totalRegistrasi = sum("maba_registrasi_total") + sum("ongoing_total_registrasi");
   const sisaRegistrasi = Math.max(totalRegistrasi - totalBayarSpp, 0);
 
-  const shortName = (d: SalutData) => d.nama_salut.replace("SALUT ", "").substring(0, 12);
+  const shortName = (d: SalutData) => displaySalutName(d.nama_salut).replace("SALUT ", "").substring(0, 12);
 
   const barData = {
     admisi: sorted.map((d) => ({ name: shortName(d), value: d.total_admisi })),

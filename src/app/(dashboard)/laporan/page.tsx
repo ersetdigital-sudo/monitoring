@@ -11,13 +11,18 @@ export default function LaporanPage() {
   if (loading) return <div className="card p-6 animate-pulse h-96" />;
 
   const totalAdmisi = data.reduce((s, d) => s + d.total_admisi, 0);
-  const totalBayar = data.reduce((s, d) => s + d.maba_bayar_admisi, 0);
-  const totalBelum = data.reduce((s, d) => s + d.maba_belum_bayar_admisi, 0);
   const totalNim = data.reduce((s, d) => s + d.dapat_nim, 0);
-  const totalRegMtk = data.reduce((s, d) => s + (d.total_admisi - d.belum_registrasi_mtk), 0);
-  const totalOngoing = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
-  const targetMaba = data.reduce((s, d) => s + d.target_maba, 0);
   const totalMabaBayarSpp = data.reduce((s, d) => s + d.maba_registrasi_bayar_spp, 0);
+  const totalRegMaba = data.reduce((s, d) => s + d.maba_registrasi_total, 0);
+  const totalOngoingBayarSpp = data.reduce((s, d) => s + d.ongoing_bayar_spp, 0);
+  const totalOngoingReg = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
+  const totalBayarSppGabungan = data.reduce((s, d) => s + d.total_bayar_spp_gabungan, 0);
+  const targetMaba = data.reduce((s, d) => s + d.target_maba, 0);
+  const pctDapatNim = totalAdmisi > 0 ? totalNim / totalAdmisi : 0;
+  const pctMabaBayar = totalRegMaba > 0 ? totalMabaBayarSpp / totalRegMaba : 0;
+  const pctOngoingBayar = totalOngoingReg > 0 ? totalOngoingBayarSpp / totalOngoingReg : 0;
+  const totalRegSpp = totalRegMaba + totalOngoingReg;
+  const pctTotalBayar = totalRegSpp > 0 ? totalBayarSppGabungan / totalRegSpp : 0;
   const realisasi = targetMaba > 0 ? totalMabaBayarSpp / targetMaba : 0;
 
   const handlePrint = () => window.print();
@@ -29,19 +34,18 @@ export default function LaporanPage() {
       upload ? `Sumber Data: ${upload.nama_file.replace(/\.xlsx$/i, "")}` : "",
       "",
       "RINGKASAN,",
-      `Total Admisi,${totalAdmisi}`,
-      `Total Bayar,${totalBayar}`,
-      `Belum Bayar,${totalBelum}`,
-      `Dapat NIM,${totalNim}`,
-      `Registrasi MTK,${totalRegMtk}`,
-      `Ongoing,${totalOngoing}`,
-      `Target Maba,${targetMaba}`,
-      `Realisasi Maba,${formatPercent(realisasi)}`,
+      `Total Admisi,${totalAdmisi},100%`,
+      `Dapat NIM,${totalNim},${formatPercent(pctDapatNim)}`,
+      `Maba Bayar SPP,${totalMabaBayarSpp},${formatPercent(pctMabaBayar)}`,
+      `On-Going Bayar SPP,${totalOngoingBayarSpp},${formatPercent(pctOngoingBayar)}`,
+      `Total Bayar SPP,${totalBayarSppGabungan},${formatPercent(pctTotalBayar)}`,
+      `Target Maba,${targetMaba},`,
+      `Realisasi Maba Bayar SPP,${formatPercent(realisasi)},`,
       "",
       "DATA PER SALUT",
-      "SALUT,ADMISI,BAYAR,BELUM,NIM,REG MTK,ONGOING,TOTAL BAYAR SPP,TARGET,REALISASI",
+      "SALUT,ADMISI,NIM,MABA BAYAR SPP,ONGOING BAYAR SPP,TOTAL SPP,TARGET,REALISASI",
       ...data.map((d) =>
-        `${d.nama_salut},${d.total_admisi},${d.maba_bayar_admisi},${d.maba_belum_bayar_admisi},${d.dapat_nim},${d.total_admisi - d.belum_registrasi_mtk},${d.ongoing_total_registrasi},${d.total_bayar_spp_gabungan},${d.target_maba},${formatPercent(d.realisasi_maba)}`
+        `${d.nama_salut},${d.total_admisi},${d.dapat_nim},${d.maba_registrasi_bayar_spp},${d.ongoing_bayar_spp},${d.total_bayar_spp_gabungan},${d.target_maba},${formatPercent(d.realisasi_maba)}`
       ),
     ].join("\n");
 
@@ -77,14 +81,13 @@ export default function LaporanPage() {
           <table className="w-full text-xs border-collapse">
             <tbody className="divide-y divide-[var(--line)]">
               {[
-                ["Total Admisi", formatNumber(totalAdmisi), "100%"],
-                ["Total Bayar", formatNumber(totalBayar), formatPercent(totalAdmisi > 0 ? totalBayar / totalAdmisi : 0)],
-                ["Belum Bayar", formatNumber(totalBelum), formatPercent(totalAdmisi > 0 ? totalBelum / totalAdmisi : 0)],
-                ["Dapat NIM", formatNumber(totalNim), formatPercent(totalAdmisi > 0 ? totalNim / totalAdmisi : 0)],
-                ["Registrasi MTK", formatNumber(totalRegMtk), formatPercent(totalAdmisi > 0 ? totalRegMtk / totalAdmisi : 0)],
-                ["Ongoing", formatNumber(totalOngoing), formatPercent(totalAdmisi > 0 ? totalOngoing / totalAdmisi : 0)],
+                ["Total Admisi", formatNumber(totalAdmisi), "100% (basis)"],
+                ["Dapat NIM", formatNumber(totalNim), formatPercent(pctDapatNim)],
+                ["Maba Bayar SPP", formatNumber(totalMabaBayarSpp), formatPercent(pctMabaBayar)],
+                ["On-Going Bayar SPP", formatNumber(totalOngoingBayarSpp), formatPercent(pctOngoingBayar)],
+                ["Total Bayar SPP", formatNumber(totalBayarSppGabungan), formatPercent(pctTotalBayar)],
                 ["Target Maba", formatNumber(targetMaba), ""],
-                ["Realisasi Maba", formatPercent(realisasi), ""],
+                ["Realisasi Maba Bayar SPP", formatPercent(realisasi), ""],
               ].map(([label, value, pct]) => (
                 <tr key={String(label)} className="hover:bg-slate-50">
                   <td className="py-2 pr-3 font-semibold">{label}</td>
@@ -105,10 +108,9 @@ export default function LaporanPage() {
                   <th className="py-2 pr-3 font-semibold">NO</th>
                   <th className="py-2 pr-3 font-semibold">SALUT</th>
                   <th className="py-2 pr-3 font-semibold bg-blue-50">ADMISI</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-50">BELUM</th>
                   <th className="py-2 pr-3 font-semibold bg-blue-50">NIM</th>
-                  <th className="py-2 pr-3 font-semibold bg-orange-50">ONGOING</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-50">MABA BAYAR SPP</th>
+                  <th className="py-2 pr-3 font-semibold bg-orange-50">ONGOING BAYAR SPP</th>
                   <th className="py-2 pr-3 font-semibold bg-slate-50">TOTAL SPP</th>
                   <th className="py-2 pr-3 font-semibold bg-slate-50">TARGET</th>
                   <th className="py-2 pr-3 font-semibold bg-slate-50">REALISASI</th>
@@ -120,10 +122,9 @@ export default function LaporanPage() {
                     <td className="py-2 pr-3 text-[var(--muted)]">{i + 1}</td>
                     <td className="py-2 pr-3 font-semibold">{d.nama_salut}</td>
                     <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.total_admisi)}</td>
-                    <td className="py-2 pr-3 text-emerald-600 bg-blue-50/30">{formatNumber(d.maba_bayar_admisi)}</td>
-                    <td className="py-2 pr-3 text-rose-600 bg-blue-50/30">{formatNumber(d.maba_belum_bayar_admisi)}</td>
                     <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.dapat_nim)}</td>
-                    <td className="py-2 pr-3 bg-orange-50/30">{formatNumber(d.ongoing_total_registrasi)}</td>
+                    <td className="py-2 pr-3 text-emerald-600 font-semibold bg-blue-50/30">{formatNumber(d.maba_registrasi_bayar_spp)}</td>
+                    <td className="py-2 pr-3 bg-orange-50/30">{formatNumber(d.ongoing_bayar_spp)}</td>
                     <td className="py-2 pr-3 font-bold text-[var(--brand)] bg-slate-50/30">{formatNumber(d.total_bayar_spp_gabungan)}</td>
                     <td className="py-2 pr-3 bg-slate-50/30">{formatNumber(d.target_maba)}</td>
                     <td className="py-2 pr-3 font-semibold text-emerald-700 bg-slate-50/30">{formatPercent(d.realisasi_maba)}</td>

@@ -22,7 +22,7 @@ const plusJakartaSans = localFont({
 export const metadata: Metadata = {
   title: "Dashboard Monitoring Registrasi Mahasiswa",
   description:
-    "Dashboard monitoring registrasi mahasiswa baru Universitas Terbuka Majene",
+    "Dashboard monitoring registrasi mahasiswa baru UT Majene",
 };
 
 export default function RootLayout({

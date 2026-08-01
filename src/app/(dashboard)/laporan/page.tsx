@@ -68,7 +68,7 @@ export default function LaporanPage() {
         <div className="text-center border-b border-[var(--line)] pb-4">
           <h1 className="text-lg font-extrabold text-[var(--brand-dark)]">LAPORAN RINGKAS</h1>
           <h2 className="text-sm font-semibold text-[var(--ink)]">Dashboard Monitoring Registrasi Mahasiswa</h2>
-          <p className="text-xs text-[var(--muted)] mt-1">Universitas Terbuka Majene — {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
+          <p className="text-xs text-[var(--muted)] mt-1">UT Majene — {new Date().toLocaleDateString("id-ID", { weekday: "long", day: "numeric", month: "long", year: "numeric" })}</p>
           {upload && <p className="text-xs text-[var(--muted)]">Sumber: {upload.nama_file.replace(/\.xlsx$/i, "")} — {new Date(upload.created_at).toLocaleString("id-ID")}</p>}
         </div>
 
@@ -135,7 +135,7 @@ export default function LaporanPage() {
         </div>
 
         <div className="text-center text-[11px] text-[var(--muted)] pt-4 border-t border-[var(--line)]">
-          Dashboard Monitoring Registrasi Mahasiswa v1.0.0 — Universitas Terbuka Majene
+          Dashboard Monitoring Registrasi Mahasiswa v1.0.0 — UT Majene
         </div>
       </div>
     </div>

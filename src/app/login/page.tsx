@@ -40,17 +40,16 @@ export default function LoginPage() {
       <div className="card w-full max-w-md p-8">
         {/* Logo */}
         <div className="text-center mb-8">
-          <div
-            className="w-16 h-16 rounded-full mx-auto mb-4 flex items-center justify-center text-2xl font-extrabold text-white"
-            style={{ background: "var(--brand)" }}
-          >
-            UTM
-          </div>
+          <img
+            src="/logo-ut.png"
+            alt="Logo UT"
+            className="w-24 h-auto object-contain mx-auto mb-4"
+          />
           <h1
             className="text-xl font-extrabold"
             style={{ color: "var(--brand-dark)" }}
           >
-            UT MAJENE
+            UT Majene
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">
             Dashboard Monitoring Registrasi Mahasiswa

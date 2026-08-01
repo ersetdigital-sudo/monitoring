@@ -75,12 +75,14 @@ export function Sidebar({ open, onClose }: SidebarProps) {
       >
         {/* === ZONA ATAS: Logo === */}
         <div className="flex-shrink-0 px-5 py-4 flex items-center gap-3 border-b border-white/10">
-          <div className="w-9 h-9 rounded-full bg-white flex items-center justify-center text-[var(--brand)] font-extrabold text-sm">
-            UTM
-          </div>
+          <img
+            src="/logo-ut.png"
+            alt="Logo UT"
+            className="w-10 h-auto object-contain flex-shrink-0"
+          />
           <div className="leading-tight">
             <div className="text-[13px] font-extrabold tracking-wide">
-              UT MAJENE
+              UT Majene
             </div>
             <div className="text-[9px] text-white/60 italic">
               Kuliah OK, Kerja OK!

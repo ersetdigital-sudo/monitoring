@@ -184,12 +184,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
             </div>
           )}
 
-          {/* Footer */}
-          <div className="px-4 py-2 border-t border-white/10">
-            <div className="text-lg font-extrabold text-white/90 leading-none">
-              Kampus Merdeka
-            </div>
-          </div>
+
         </div>
       </aside>
     </>

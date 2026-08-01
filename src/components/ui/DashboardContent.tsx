@@ -153,6 +153,8 @@ export function DashboardContent() {
     return s.includes("NON SALUT") || s.includes("NON POKJAR");
   };
 
+  const displayName = (nama: string) => (isNonSalut(nama) ? "NON SALUT" : nama);
+
   const top5 = [...rawData]
     .filter((d) => !isNonSalut(d.nama_salut))
     .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan)
@@ -246,9 +248,9 @@ export function DashboardContent() {
           <h3 className="text-sm font-bold mb-2">Data Registrasi per SALUT</h3>
           {/* Legend */}
           <div className="flex flex-wrap items-center gap-3 mb-3 text-[10px]">
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-200 border border-blue-300" />Maba</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-orange-200 border border-orange-300" />Ongoing</span>
-            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-slate-200 border border-slate-300" />Gabungan</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-blue-200 border border-blue-300" />Maba (Baru)</span>
+            <span className="flex items-center gap-1"><span className="w-2.5 h-2.5 rounded bg-slate-200 border border-slate-300" />Capaian / Target</span>
+            <span className="flex items-center gap-1"><span className="w-0.5 h-4 bg-slate-300" />Pemisah</span>
           </div>
           <div className="overflow-x-auto scroll-thin">
             <table className="w-full text-xs text-left border-collapse">
@@ -257,26 +259,27 @@ export function DashboardContent() {
                   <th className="py-2 pr-3 font-semibold">NO</th>
                   <th className="py-2 pr-3 font-semibold">SALUT</th>
                   <th className="py-2 pr-3 font-semibold bg-blue-100">ADMISI</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-100">BAYAR</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-100">BELUM</th>
-                  <th className="py-2 pr-3 font-semibold bg-blue-100">NIM</th>
-                  <th className="py-2 pr-3 font-semibold bg-orange-100">ONGOING</th>
-                  <th className="py-2 pr-3 font-semibold bg-slate-100">TOTAL BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">BAYAR ADMISI</th>
+                  <th className="py-2 pr-3 font-semibold bg-blue-100">MABA BAYAR</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-100 border-l-4 border-l-slate-300">TARGET</th>
+                  <th className="py-2 pr-3 font-semibold bg-slate-100">REALISASI</th>
                 </tr>
               </thead>
               <tbody className="divide-y divide-[var(--line)]">
-                {data.map((r, i) => (
-                  <tr key={r.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
-                    <td className="py-2.5 pr-3 font-semibold">{r.nama_salut}</td>
-                    <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.total_admisi)}</td>
-                    <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50">{formatNumber(r.maba_bayar_admisi)}</td>
-                    <td className="py-2.5 pr-3 text-rose-600 bg-blue-50">{formatNumber(r.maba_belum_bayar_admisi)}</td>
-                    <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.dapat_nim)}</td>
-                    <td className="py-2.5 pr-3 bg-orange-50">{formatNumber(r.ongoing_total_registrasi)}</td>
-                    <td className="py-2.5 pr-3 font-bold text-[var(--brand)] bg-slate-50">{formatNumber(r.total_bayar_spp_gabungan)}</td>
-                  </tr>
-                ))}
+                {data.map((r, i) => {
+                  const pct = r.target_maba > 0 ? (r.maba_registrasi_bayar_spp / r.target_maba) * 100 : 0;
+                  return (
+                    <tr key={r.id} className="hover:bg-slate-50">
+                      <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
+                      <td className="py-2.5 pr-3 font-semibold">{displayName(r.nama_salut)}</td>
+                      <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.total_admisi)}</td>
+                      <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50">{formatNumber(r.maba_bayar_admisi)}</td>
+                      <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.maba_registrasi_bayar_spp)}</td>
+                      <td className="py-2.5 pr-3 bg-slate-50 border-l-4 border-l-slate-300">{formatNumber(r.target_maba)}</td>
+                      <td className="py-2.5 pr-3 font-semibold text-emerald-700 bg-slate-50">{formatPercent(pct / 100)}</td>
+                    </tr>
+                  );
+                })}
               </tbody>
             </table>
           </div>

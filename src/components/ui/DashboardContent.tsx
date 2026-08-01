@@ -6,7 +6,7 @@ import { useDashboardData } from "@/lib/hooks";
 import { useFilter } from "@/lib/filter-context";
 import { formatNumber, formatPercent } from "@/lib/utils";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
-import { BarChartSalut, DonutBayar, DonutProgress, BarChartTop10 } from "@/components/charts";
+import { BarChartCard, GroupedBarChartCard, DonutCard } from "@/components/charts";
 
 export function DashboardContent() {
   const { data: rawData, summary: rawSummary, uploadInfo, loading, error, refresh } =
@@ -148,9 +148,29 @@ export function DashboardContent() {
     { title: "Total Bayar SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 
-  const top5 = [...data]
+  const isNonSalut = (nama: string) => {
+    const s = nama.toUpperCase().trim();
+    return s.includes("NON SALUT") || s.includes("NON POKJAR");
+  };
+
+  const top5 = [...rawData]
+    .filter((d) => !isNonSalut(d.nama_salut))
     .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan)
     .slice(0, 5);
+
+  const shortName = (d: typeof data[number]) => d.nama_salut.replace("SALUT ", "").substring(0, 12);
+  const sortedData = [...data].sort((a, b) => b.total_admisi - a.total_admisi);
+  const previewTotalBayar = sortedData.map((d) => ({
+    name: shortName(d),
+    value: d.total_bayar_spp_gabungan,
+  }));
+  const previewTarget = sortedData.map((d) => ({
+    name: shortName(d),
+    mabaBayar: d.maba_registrasi_bayar_spp,
+    target: d.target_maba,
+  }));
+  const previewBayarSpp = data.reduce((s, d) => s + d.total_bayar_spp_gabungan, 0);
+  const previewTargetTotal = data.reduce((s, d) => s + d.target_maba, 0);
 
   const medalConfig = [
     { bg: "#facc15", color: "#7a5c00" },
@@ -188,23 +208,36 @@ export function DashboardContent() {
       </section>
 
       {/* Charts */}
-      <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-        <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">Perbandingan Admisi per SALUT</h3>
-          <div className="h-56"><BarChartSalut data={data} /></div>
-        </div>
-        <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">Komposisi Pembayaran</h3>
-          <div className="h-56"><DonutBayar data={data} /></div>
-        </div>
-        <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">Progress Registrasi</h3>
-          <div className="h-56"><DonutProgress data={data} /></div>
-        </div>
-        <div className="card p-4">
-          <h3 className="text-sm font-bold mb-1">Top 10 SALUT (Berdasarkan Admisi)</h3>
-          <div className="h-56"><BarChartTop10 data={data} /></div>
-        </div>
+      <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-5">
+        <BarChartCard
+          title="Total Bayar SPP Per SALUT"
+          data={previewTotalBayar}
+          dataKey="value"
+          name="Total Bayar SPP"
+          fill="#7c3aed"
+          heightClass="h-56"
+        />
+        <GroupedBarChartCard
+          title="Perbandingan Total Bayar Maba dan Target"
+          data={previewTarget}
+          yMax={100}
+          heightClass="h-56"
+          series={[
+            { dataKey: "mabaBayar", name: "Bayar SPP Maba", fill: "#16a34a" },
+            { dataKey: "target", name: "Target Maba", fill: "#94a3b8" },
+          ]}
+        />
+        <DonutCard
+          title="Progress Total Bayar SPP"
+          subtitle={`Terhadap Target Maba (${formatNumber(previewTargetTotal)})`}
+          heightClass="h-44"
+          centerValue={previewBayarSpp}
+          centerLabel="Total Bayar SPP"
+          segments={[
+            { name: "Bayar SPP", value: previewBayarSpp, fill: "#16a34a" },
+            { name: "Sisa Target", value: Math.max(previewTargetTotal - previewBayarSpp, 0), fill: "#ef4444" },
+          ]}
+        />
       </section>
 
       {/* Table + Ranking */}
@@ -261,7 +294,7 @@ export function DashboardContent() {
                     {rank <= 3 ? <span dangerouslySetInnerHTML={{ __html: ICONS.trophy }} className="[&>svg]:w-4 [&>svg]:h-4" /> : rank}
                   </span>
                   <span className="text-xs font-semibold flex-1 truncate">{r.nama_salut}</span>
-                  <span className="text-sm font-extrabold text-[var(--brand)]">{formatNumber(r.total_bayar_spp_gabungan)}</span>
+                  <AnimatedNumber value={r.total_bayar_spp_gabungan} format={formatNumber} className="text-sm font-extrabold text-[var(--brand)]" />
                 </li>
               );
             })}

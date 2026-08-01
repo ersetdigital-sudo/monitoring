@@ -158,8 +158,8 @@ export function DashboardContent() {
 
       {/* Stat Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map((s, i) => (
-          <div key={s.title} className="card p-4 flex items-start gap-3 rise" style={{ animationDelay: `${i * 50}ms` }}>
+        {stats.map((s) => (
+          <div key={s.title} className="card p-4 flex items-start gap-3">
             <div
               className="stat-icon"
               style={{ background: s.bg, color: s.color }}
@@ -177,8 +177,8 @@ export function DashboardContent() {
 
       {/* New Stats: Target & Realisasi */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {newStats.map((s, i) => (
-          <div key={s.title} className="card p-4 flex items-start gap-3 rise" style={{ animationDelay: `${350 + i * 50}ms` }}>
+        {newStats.map((s) => (
+          <div key={s.title} className="card p-4 flex items-start gap-3">
             <div
               className="stat-icon"
               style={{ background: s.bg, color: s.color }}
@@ -196,19 +196,19 @@ export function DashboardContent() {
 
       {/* Charts */}
       <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-        <div className="card p-4 rise" style={{ animationDelay: "600ms" }}>
+        <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Perbandingan Admisi per SALUT</h3>
           <div className="h-56"><BarChartSalut data={data} /></div>
         </div>
-        <div className="card p-4 rise" style={{ animationDelay: "650ms" }}>
+        <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Komposisi Pembayaran</h3>
           <div className="h-56"><DonutBayar data={data} /></div>
         </div>
-        <div className="card p-4 rise" style={{ animationDelay: "700ms" }}>
+        <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Progress Registrasi</h3>
           <div className="h-56"><DonutProgress data={data} /></div>
         </div>
-        <div className="card p-4 rise" style={{ animationDelay: "750ms" }}>
+        <div className="card p-4">
           <h3 className="text-sm font-bold mb-1">Top 10 SALUT (Berdasarkan Admisi)</h3>
           <div className="h-56"><BarChartTop10 data={data} /></div>
         </div>

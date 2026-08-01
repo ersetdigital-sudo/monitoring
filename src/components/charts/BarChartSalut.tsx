@@ -47,7 +47,7 @@ export function BarChartSalut({ data }: Props) {
             border: "1px solid #e6ebf3",
           }}
         />
-        <Bar dataKey="admisi" radius={[4, 4, 0, 0]} maxBarSize={32} animationDuration={700} animationBegin={150}>
+        <Bar dataKey="admisi" radius={[4, 4, 0, 0]} maxBarSize={32}>
           {chartData.map((_, i) => (
             <Cell key={i} fill="#1b4fa8" />
           ))}

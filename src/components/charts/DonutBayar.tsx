@@ -36,8 +36,6 @@ export function DonutBayar({ data }: Props) {
           outerRadius="80%"
           paddingAngle={2}
           dataKey="value"
-          animationDuration={800}
-          animationBegin={150}
         >
           {chartData.map((_, i) => (
             <Cell key={i} fill={COLORS[i]} />

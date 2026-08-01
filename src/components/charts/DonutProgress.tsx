@@ -33,8 +33,6 @@ export function DonutProgress({ data }: Props) {
             startAngle={90}
             endAngle={-270}
             dataKey="value"
-            animationDuration={800}
-            animationBegin={150}
           >
             <Cell fill="#1b4fa8" />
             <Cell fill="#e2e8f0" />

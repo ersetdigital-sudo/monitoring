@@ -50,7 +50,7 @@ export function Header({ onMenuClick }: HeaderProps) {
             />
             {dateStr}
           </div>
-          <div className="text-[11px] text-[var(--muted)]">{timeStr} WIB</div>
+          <div className="text-[11px] text-[var(--muted)]">{timeStr}</div>
         </div>
       </div>
     </header>

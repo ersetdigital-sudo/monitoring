@@ -129,7 +129,7 @@ export default function GrafikAnalitikPage() {
           centerLabel="Total Bayar SPP"
           segments={[
             { name: "Bayar SPP", value: totalBayarSpp, fill: "#16a34a" },
-            { name: "Sisa Registrasi", value: sisaRegistrasi, fill: "#ef4444" },
+            { name: "Belum Bayar SPP", value: sisaRegistrasi, fill: "#ef4444" },
           ]}
         />
       </div>

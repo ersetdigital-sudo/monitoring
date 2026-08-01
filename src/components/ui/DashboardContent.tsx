@@ -241,7 +241,7 @@ export function DashboardContent() {
           centerLabel="Total Bayar SPP"
           segments={[
             { name: "Bayar SPP", value: previewBayarSpp, fill: "#16a34a" },
-            { name: "Sisa Registrasi", value: Math.max(previewTotalRegistrasi - previewBayarSpp, 0), fill: "#ef4444" },
+            { name: "Belum Bayar SPP", value: Math.max(previewTotalRegistrasi - previewBayarSpp, 0), fill: "#ef4444" },
           ]}
         />
       </section>

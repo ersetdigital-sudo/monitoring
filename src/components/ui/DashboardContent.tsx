@@ -47,6 +47,7 @@ export function DashboardContent() {
       0
     );
     const ongoing = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
+    const total_registrasi = registrasi_mtk + ongoing;
     const ongoing_belum_bayar_spp = data.reduce(
       (s, d) => s + d.ongoing_belum_bayar_spp,
       0
@@ -64,6 +65,7 @@ export function DashboardContent() {
       maba_registrasi_belum_bayar_spp,
       maba_registrasi_bayar_spp,
       ongoing,
+      total_registrasi,
       ongoing_belum_bayar_spp,
       ongoing_bayar_spp,
       target_maba,
@@ -142,7 +144,7 @@ export function DashboardContent() {
     { title: "Realisasi Maba", value: summary.realisasi_maba, format: formatPercent, unit: "Pencapaian", sub: `${formatNumber(summary.maba_registrasi_bayar_spp)}/${formatNumber(summary.target_maba)} Mahasiswa`, color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
     { title: "On-Going Belum Bayar SPP", value: summary.ongoing_belum_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.ongoing_belum_bayar_spp, summary.ongoing)} dari Total Registrasi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
     { title: "On-Going Bayar SPP", value: summary.ongoing_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.ongoing_bayar_spp, summary.ongoing)} dari Total Registrasi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.money },
-    { title: "Total Registrasi", value: summary.ongoing, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#0ea5e9", bg: "#e0f2fe", icon: ICONS.users },
+    { title: "Total Registrasi", value: summary.total_registrasi, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#0ea5e9", bg: "#e0f2fe", icon: ICONS.users },
     { title: "Total Bayar SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 

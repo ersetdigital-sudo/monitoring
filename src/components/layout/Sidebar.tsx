@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ICONS } from "@/lib/icons";
+import { useFilter } from "@/lib/filter-context";
 import type { SalutData } from "@/types/database";
 
 const navItems = [
@@ -28,6 +29,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const [salutList, setSalutList] = useState<string[]>([]);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
+  const { filter, setSalut, setStatusBayar, applyFilter } = useFilter();
 
   useEffect(() => {
     fetch("/api/data")
@@ -140,19 +142,30 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               FILTER DATA
             </div>
             <div className="space-y-1.5">
-              <select className="sidebar-select w-full text-[11px] rounded-lg px-2.5 py-1.5 outline-none">
-                <option>Semua SALUT</option>
+              <select
+                className="sidebar-select w-full text-[11px] rounded-lg px-2.5 py-1.5 outline-none"
+                value={filter.salut}
+                onChange={(e) => setSalut(e.target.value)}
+              >
+                <option value="">Semua SALUT</option>
                 {salutList.map((s) => (
                   <option key={s} value={s}>{s}</option>
                 ))}
               </select>
-              <select className="sidebar-select w-full text-[11px] rounded-lg px-2.5 py-1.5 outline-none">
-                <option>Semua Status Bayar</option>
-                <option>Sudah Bayar</option>
-                <option>Belum Bayar</option>
+              <select
+                className="sidebar-select w-full text-[11px] rounded-lg px-2.5 py-1.5 outline-none"
+                value={filter.statusBayar}
+                onChange={(e) => setStatusBayar(e.target.value)}
+              >
+                <option value="">Semua Status Bayar</option>
+                <option value="sudah_bayar">Sudah Bayar</option>
+                <option value="belum_bayar">Belum Bayar</option>
               </select>
             </div>
-            <button className="w-full mt-2 text-[11px] font-semibold bg-white text-[var(--brand)] rounded-lg py-1.5 flex items-center justify-center gap-1.5">
+            <button
+              onClick={applyFilter}
+              className="w-full mt-2 text-[11px] font-semibold bg-white text-[var(--brand)] rounded-lg py-1.5 flex items-center justify-center gap-1.5"
+            >
               <svg className="w-3.5 h-3.5" viewBox="0 0 256 256" fill="currentColor">
                 <path d="m229.66 77.66-128 128a8 8 0 0 1-11.32 0l-56-56a8 8 0 0 1 11.32-11.32L96 188.69 218.34 66.34a8 8 0 0 1 11.32 11.32Z" />
               </svg>

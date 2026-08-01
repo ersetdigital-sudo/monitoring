@@ -1,13 +1,62 @@
 "use client";
 
+import { useMemo } from "react";
 import { ICONS } from "@/lib/icons";
 import { useDashboardData } from "@/lib/hooks";
+import { useFilter } from "@/lib/filter-context";
 import { formatNumber, formatPercent } from "@/lib/utils";
 import { BarChartSalut, DonutBayar, DonutProgress, BarChartTop10 } from "@/components/charts";
 
 export function DashboardContent() {
-  const { data, summary, uploadInfo, loading, error, refresh } =
+  const { data: rawData, summary: rawSummary, uploadInfo, loading, error, refresh } =
     useDashboardData();
+  const { filter } = useFilter();
+
+  const data = useMemo(() => {
+    let result = rawData;
+
+    // Filter by SALUT
+    if (filter.salut) {
+      result = result.filter((d) => d.nama_salut === filter.salut);
+    }
+
+    // Filter by Status Bayar
+    if (filter.statusBayar === "sudah_bayar") {
+      result = result.filter((d) => d.maba_bayar_admisi > 0 || d.ongoing_bayar_spp > 0);
+    } else if (filter.statusBayar === "belum_bayar") {
+      result = result.filter((d) => d.maba_belum_bayar_admisi > 0 || d.ongoing_belum_bayar_spp > 0);
+    }
+
+    return result;
+  }, [rawData, filter]);
+
+  const summary = useMemo(() => {
+    if (data.length === 0) return null;
+    const total_admisi = data.reduce((s, d) => s + d.total_admisi, 0);
+    const total_bayar = data.reduce((s, d) => s + d.maba_bayar_admisi, 0);
+    const belum_bayar = data.reduce((s, d) => s + d.maba_belum_bayar_admisi, 0);
+    const dapat_nim = data.reduce((s, d) => s + d.dapat_nim, 0);
+    const registrasi_mtk = data.reduce((s, d) => s + d.maba_registrasi_total, 0);
+    const ongoing = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
+    const total_bayar_spp_gabungan = data.reduce((s, d) => s + d.total_bayar_spp_gabungan, 0);
+    const target_maba = data.reduce((s, d) => s + d.target_maba, 0);
+    const total_maba_bayar_spp = data.reduce((s, d) => s + d.maba_registrasi_bayar_spp, 0);
+    const progress_total = total_admisi > 0 ? total_bayar / total_admisi : 0;
+    const realisasi_maba = target_maba > 0 ? total_maba_bayar_spp / target_maba : 0;
+    return {
+      total_admisi,
+      total_bayar,
+      belum_bayar,
+      dapat_nim,
+      registrasi_mtk,
+      ongoing,
+      progress_total,
+      target_maba,
+      realisasi_maba,
+      total_maba_bayar_spp,
+      total_bayar_spp_gabungan,
+    };
+  }, [data]);
 
   if (loading) {
     return (

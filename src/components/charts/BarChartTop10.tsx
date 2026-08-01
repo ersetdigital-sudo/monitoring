@@ -47,7 +47,7 @@ export function BarChartTop10({ data }: Props) {
             border: "1px solid #e6ebf3",
           }}
         />
-        <Bar dataKey="admisi" radius={[0, 4, 4, 0]} maxBarSize={20}>
+        <Bar dataKey="admisi" radius={[0, 4, 4, 0]} maxBarSize={20} animationDuration={700} animationBegin={150}>
           {chartData.map((_, i) => (
             <Cell key={i} fill="#1b4fa8" />
           ))}

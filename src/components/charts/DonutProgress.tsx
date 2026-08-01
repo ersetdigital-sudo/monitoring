@@ -3,6 +3,7 @@
 import { PieChart, Pie, Cell, ResponsiveContainer } from "recharts";
 import type { SalutData } from "@/types/database";
 import { formatPercent } from "@/lib/utils";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 
 interface Props {
   data: SalutData[];
@@ -32,6 +33,8 @@ export function DonutProgress({ data }: Props) {
             startAngle={90}
             endAngle={-270}
             dataKey="value"
+            animationDuration={800}
+            animationBegin={150}
           >
             <Cell fill="#1b4fa8" />
             <Cell fill="#e2e8f0" />
@@ -39,9 +42,12 @@ export function DonutProgress({ data }: Props) {
         </PieChart>
       </ResponsiveContainer>
       <div className="absolute text-center">
-        <div className="text-2xl font-extrabold text-[var(--brand)]">
-          {formatPercent(percentDecimal)}
-        </div>
+        <AnimatedNumber
+          value={percentDecimal}
+          format={formatPercent}
+          duration={800}
+          className="text-2xl font-extrabold text-[var(--brand)]"
+        />
       </div>
     </div>
   );

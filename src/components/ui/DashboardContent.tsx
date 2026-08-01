@@ -5,6 +5,7 @@ import { ICONS } from "@/lib/icons";
 import { useDashboardData } from "@/lib/hooks";
 import { useFilter } from "@/lib/filter-context";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { BarChartSalut, DonutBayar, DonutProgress, BarChartTop10 } from "@/components/charts";
 
 export function DashboardContent() {
@@ -120,19 +121,19 @@ export function DashboardContent() {
       : "0%";
 
   const stats = [
-    { title: "TOTAL ADMISI", value: formatNumber(summary.total_admisi), unit: "Mahasiswa", sub: "100% dari admisi", color: "#2563eb", bg: "#e0edff", icon: ICONS.users },
-    { title: "TOTAL BAYAR", value: formatNumber(summary.total_bayar), unit: "Mahasiswa", sub: `${pct(summary.total_bayar)} dari admisi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.checkCircle },
-    { title: "BELUM BAYAR", value: formatNumber(summary.belum_bayar), unit: "Mahasiswa", sub: `${pct(summary.belum_bayar)} dari admisi`, color: "#ea580c", bg: "#ffedd5", icon: ICONS.receipt },
-    { title: "DAPAT NIM", value: formatNumber(summary.dapat_nim), unit: "Mahasiswa", sub: `${pct(summary.dapat_nim)} dari admisi`, color: "#7c3aed", bg: "#ede9fe", icon: ICONS.id },
-    { title: "REGISTRASI MTK", value: formatNumber(summary.registrasi_mtk), unit: "Mahasiswa", sub: `${pct(summary.registrasi_mtk)} dari admisi`, color: "#2563eb", bg: "#e0edff", icon: ICONS.book },
-    { title: "ONGOING", value: formatNumber(summary.ongoing), unit: "Mahasiswa", sub: `${pct(summary.ongoing)} dari admisi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
-    { title: "PROGRESS TOTAL", value: formatPercent(summary.progress_total), unit: "Pembayaran", sub: "", color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
+    { title: "TOTAL ADMISI", value: summary.total_admisi, format: formatNumber, unit: "Mahasiswa", sub: "100% dari admisi", color: "#2563eb", bg: "#e0edff", icon: ICONS.users },
+    { title: "TOTAL BAYAR", value: summary.total_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.total_bayar)} dari admisi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.checkCircle },
+    { title: "BELUM BAYAR", value: summary.belum_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.belum_bayar)} dari admisi`, color: "#ea580c", bg: "#ffedd5", icon: ICONS.receipt },
+    { title: "DAPAT NIM", value: summary.dapat_nim, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.dapat_nim)} dari admisi`, color: "#7c3aed", bg: "#ede9fe", icon: ICONS.id },
+    { title: "REGISTRASI MTK", value: summary.registrasi_mtk, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.registrasi_mtk)} dari admisi`, color: "#2563eb", bg: "#e0edff", icon: ICONS.book },
+    { title: "ONGOING", value: summary.ongoing, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.ongoing)} dari admisi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
+    { title: "PROGRESS TOTAL", value: summary.progress_total, format: formatPercent, unit: "Pembayaran", sub: "", color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
   ];
 
   const newStats = [
-    { title: "TARGET MABA", value: formatNumber(summary.target_maba), unit: "Mahasiswa", sub: "Target pendaftaran", color: "#0891b2", bg: "#ecfeff", icon: ICONS.gauge },
-    { title: "REALISASI MABA", value: formatPercent(summary.realisasi_maba), unit: "Pencapaian", sub: `${formatNumber(summary.total_maba_bayar_spp)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
-    { title: "TOTAL BAYAR SPP", value: formatNumber(summary.total_bayar_spp_gabungan), unit: "Maba + Ongoing", sub: "Gabungan SPP", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
+    { title: "TARGET MABA", value: summary.target_maba, format: formatNumber, unit: "Mahasiswa", sub: "Target pendaftaran", color: "#0891b2", bg: "#ecfeff", icon: ICONS.gauge },
+    { title: "REALISASI MABA", value: summary.realisasi_maba, format: formatPercent, unit: "Pencapaian", sub: `${formatNumber(summary.total_maba_bayar_spp)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
+    { title: "TOTAL BAYAR SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Maba + Ongoing", sub: "Gabungan SPP", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 
   const top5 = [...data]
@@ -157,8 +158,8 @@ export function DashboardContent() {
 
       {/* Stat Cards */}
       <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-        {stats.map((s) => (
-          <div key={s.title} className="card p-4 flex items-start gap-3">
+        {stats.map((s, i) => (
+          <div key={s.title} className="card p-4 flex items-start gap-3 rise" style={{ animationDelay: `${i * 50}ms` }}>
             <div
               className="stat-icon"
               style={{ background: s.bg, color: s.color }}
@@ -166,7 +167,7 @@ export function DashboardContent() {
             />
             <div className="min-w-0">
               <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">{s.title}</div>
-              <div className="text-2xl font-extrabold leading-tight" style={{ color: s.color }}>{s.value}</div>
+              <AnimatedNumber value={s.value} format={s.format} className="text-2xl font-extrabold leading-tight" style={{ color: s.color }} />
               <div className="text-[11px] text-[var(--muted)]">{s.unit}</div>
               {s.sub && <div className="text-[10px] font-semibold mt-0.5" style={{ color: s.color }}>{s.sub}</div>}
             </div>
@@ -176,8 +177,8 @@ export function DashboardContent() {
 
       {/* New Stats: Target & Realisasi */}
       <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {newStats.map((s) => (
-          <div key={s.title} className="card p-4 flex items-start gap-3">
+        {newStats.map((s, i) => (
+          <div key={s.title} className="card p-4 flex items-start gap-3 rise" style={{ animationDelay: `${350 + i * 50}ms` }}>
             <div
               className="stat-icon"
               style={{ background: s.bg, color: s.color }}
@@ -185,7 +186,7 @@ export function DashboardContent() {
             />
             <div className="min-w-0">
               <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">{s.title}</div>
-              <div className="text-2xl font-extrabold leading-tight" style={{ color: s.color }}>{s.value}</div>
+              <AnimatedNumber value={s.value} format={s.format} className="text-2xl font-extrabold leading-tight" style={{ color: s.color }} />
               <div className="text-[11px] text-[var(--muted)]">{s.unit}</div>
               {s.sub && <div className="text-[10px] font-semibold mt-0.5" style={{ color: s.color }}>{s.sub}</div>}
             </div>
@@ -195,19 +196,19 @@ export function DashboardContent() {
 
       {/* Charts */}
       <section className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-4 gap-5">
-        <div className="card p-4">
+        <div className="card p-4 rise" style={{ animationDelay: "600ms" }}>
           <h3 className="text-sm font-bold mb-1">Perbandingan Admisi per SALUT</h3>
           <div className="h-56"><BarChartSalut data={data} /></div>
         </div>
-        <div className="card p-4">
+        <div className="card p-4 rise" style={{ animationDelay: "650ms" }}>
           <h3 className="text-sm font-bold mb-1">Komposisi Pembayaran</h3>
           <div className="h-56"><DonutBayar data={data} /></div>
         </div>
-        <div className="card p-4">
+        <div className="card p-4 rise" style={{ animationDelay: "700ms" }}>
           <h3 className="text-sm font-bold mb-1">Progress Registrasi</h3>
           <div className="h-56"><DonutProgress data={data} /></div>
         </div>
-        <div className="card p-4">
+        <div className="card p-4 rise" style={{ animationDelay: "750ms" }}>
           <h3 className="text-sm font-bold mb-1">Top 10 SALUT (Berdasarkan Admisi)</h3>
           <div className="h-56"><BarChartTop10 data={data} /></div>
         </div>

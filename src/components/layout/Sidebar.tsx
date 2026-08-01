@@ -89,7 +89,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
           </div>
           <div className="leading-tight">
             <div className="text-[13px] font-extrabold tracking-wide">
-              UNIVERSITAS TERBUKA MAJENE
+              UT MAJENE
             </div>
             <div className="text-[9px] text-white/60 italic">
               Kuliah OK, Kerja OK!

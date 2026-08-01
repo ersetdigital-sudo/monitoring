@@ -50,7 +50,7 @@ export default function LoginPage() {
             className="text-xl font-extrabold"
             style={{ color: "var(--brand-dark)" }}
           >
-            UNIVERSITAS TERBUKA MAJENE
+            UT MAJENE
           </h1>
           <p className="text-sm text-[var(--muted)] mt-1">
             Dashboard Monitoring Registrasi Mahasiswa

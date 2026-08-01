@@ -63,42 +63,46 @@ export default function DataSalutPage() {
       {/* Cards per SALUT */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
         {data.map((d) => {
-          const pctBayar = d.total_admisi > 0 ? (d.maba_bayar_admisi / d.total_admisi) * 100 : 0;
+          const realisasiPct = d.target_maba > 0 ? (d.maba_registrasi_bayar_spp / d.target_maba) * 100 : 0;
           return (
             <div key={d.id} className="card p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold truncate">{d.nama_salut}</h3>
                 <AnimatedNumber
-                  value={pctBayar / 100}
+                  value={realisasiPct / 100}
                   format={formatPercent}
                   className="text-xs font-bold px-2 py-0.5 rounded-full"
                   style={{
-                    background: pctBayar >= 80 ? "#dcfce7" : pctBayar >= 50 ? "#fef3c7" : "#fee2e2",
-                    color: pctBayar >= 80 ? "#16a34a" : pctBayar >= 50 ? "#d97706" : "#dc2626",
+                    background: realisasiPct >= 80 ? "#dcfce7" : realisasiPct >= 50 ? "#fef3c7" : "#fee2e2",
+                    color: realisasiPct >= 80 ? "#16a34a" : realisasiPct >= 50 ? "#d97706" : "#dc2626",
                   }}
                 />
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <AnimatedBar value={pctBayar} />
+                <AnimatedBar value={realisasiPct} />
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
+                <div className="bg-slate-50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">Target:</span>{" "}
+                  <AnimatedNumber value={d.target_maba} format={formatNumber} className="font-semibold" />
+                </div>
                 <div className="bg-blue-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Admisi:</span>{" "}
                   <AnimatedNumber value={d.total_admisi} format={formatNumber} className="font-semibold" />
                 </div>
                 <div className="bg-blue-50/50 rounded px-2 py-1">
-                  <span className="text-[var(--muted)]">Bayar:</span>{" "}
-                  <AnimatedNumber value={d.maba_bayar_admisi} format={formatNumber} className="font-semibold text-emerald-600" />
-                </div>
-                <div className="bg-blue-50/50 rounded px-2 py-1">
-                  <span className="text-[var(--muted)]">NIM:</span>{" "}
+                  <span className="text-[var(--muted)]">Dapat NIM:</span>{" "}
                   <AnimatedNumber value={d.dapat_nim} format={formatNumber} className="font-semibold" />
                 </div>
-                <div className="bg-orange-50/50 rounded px-2 py-1">
-                  <span className="text-[var(--muted)]">Ongoing:</span>{" "}
-                  <AnimatedNumber value={d.ongoing_total_registrasi} format={formatNumber} className="font-semibold" />
+                <div className="bg-blue-50/50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">Maba Bayar SPP:</span>{" "}
+                  <AnimatedNumber value={d.maba_registrasi_bayar_spp} format={formatNumber} className="font-semibold text-emerald-600" />
                 </div>
-                <div className="bg-slate-50 rounded px-2 py-1 col-span-2">
+                <div className="bg-orange-50/50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">On-Going Bayar SPP:</span>{" "}
+                  <AnimatedNumber value={d.ongoing_bayar_spp} format={formatNumber} className="font-semibold" />
+                </div>
+                <div className="bg-slate-50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Total Bayar SPP:</span>{" "}
                   <AnimatedNumber value={d.total_bayar_spp_gabungan} format={formatNumber} className="font-bold text-[var(--brand)]" />
                 </div>

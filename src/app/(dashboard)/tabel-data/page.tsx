@@ -1,27 +1,17 @@
 "use client";
 
-import { useState, useEffect, useMemo } from "react";
+import { useMemo, useState } from "react";
 import type { SalutData } from "@/types/database";
 import { formatNumber } from "@/lib/utils";
+import { useDashboardData } from "@/lib/hooks";
 
 export default function TabelDataPage() {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useDashboardData();
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<keyof SalutData>("nama_salut");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
   const perPage = 10;
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => {
-        setData(json.data || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
 
   const handleSort = (key: keyof SalutData) => {
     if (sortKey === key) {

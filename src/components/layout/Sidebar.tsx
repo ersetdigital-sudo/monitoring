@@ -6,7 +6,7 @@ import { useState, useEffect } from "react";
 import { createClient } from "@/lib/supabase/client";
 import { ICONS } from "@/lib/icons";
 import { useFilter } from "@/lib/filter-context";
-import type { SalutData } from "@/types/database";
+import { useDashboardData } from "@/lib/hooks";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ICONS.dashboard },
@@ -26,22 +26,11 @@ interface SidebarProps {
 export function Sidebar({ open, onClose }: SidebarProps) {
   const pathname = usePathname();
   const router = useRouter();
-  const [salutList, setSalutList] = useState<string[]>([]);
+  const { data } = useDashboardData();
+  const salutList = data.map((d) => d.nama_salut);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
   const { filter, setSalut, setStatusBayar, applyFilter } = useFilter();
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => {
-        if (json.data) {
-          const names = json.data.map((d: SalutData) => d.nama_salut);
-          setSalutList(names);
-        }
-      })
-      .catch(() => {});
-  }, []);
 
   useEffect(() => {
     const supabase = createClient();

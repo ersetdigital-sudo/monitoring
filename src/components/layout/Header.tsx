@@ -1,6 +1,8 @@
 "use client";
 
 import { ICONS } from "@/lib/icons";
+import { DATA_KEY } from "@/lib/hooks";
+import { mutate } from "swr";
 
 interface HeaderProps {
   onMenuClick?: () => void;
@@ -53,6 +55,7 @@ export function Header({ onMenuClick }: HeaderProps) {
           <div className="text-[11px] text-[var(--muted)]">{timeStr} WIB</div>
         </div>
         <button
+          onClick={() => mutate(DATA_KEY)}
           className="text-xs font-semibold text-white rounded-lg px-4 py-2.5 flex items-center gap-2"
           style={{ background: "var(--brand)" }}
         >

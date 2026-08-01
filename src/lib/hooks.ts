@@ -1,8 +1,30 @@
 "use client";
 
-import { useState, useEffect, useCallback } from "react";
+import useSWR from "swr";
 import type { SalutData, DashboardSummary } from "@/types/database";
 import { calculateSummary } from "@/lib/utils";
+
+export const DATA_KEY = "/api/data";
+
+interface DataResponse {
+  data: SalutData[];
+  upload: { id: string; nama_file: string; created_at: string } | null;
+}
+
+const fetcher = async (url: string): Promise<DataResponse> => {
+  const res = await fetch(url);
+  const json = await res.json();
+  if (!res.ok) {
+    throw new Error(json.error || "Gagal mengambil data");
+  }
+  return json;
+};
+
+const swrConfig = {
+  revalidateOnFocus: false,
+  revalidateOnReconnect: false,
+  dedupingInterval: 5000,
+};
 
 interface UseDataReturn {
   data: SalutData[];
@@ -14,41 +36,21 @@ interface UseDataReturn {
 }
 
 export function useDashboardData(): UseDataReturn {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [uploadInfo, setUploadInfo] = useState<{
-    id: string;
-    nama_file: string;
-    created_at: string;
-  } | null>(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const { data, error, isLoading, mutate } = useSWR<DataResponse>(
+    DATA_KEY,
+    fetcher,
+    swrConfig
+  );
 
-  const fetchData = useCallback(async () => {
-    setLoading(true);
-    setError(null);
+  const rows = data?.data ?? [];
+  const summary = rows.length > 0 ? calculateSummary(rows) : null;
 
-    try {
-      const res = await fetch("/api/data");
-      const json = await res.json();
-
-      if (!res.ok) {
-        throw new Error(json.error || "Gagal mengambil data");
-      }
-
-      setData(json.data || []);
-      setUploadInfo(json.upload || null);
-    } catch (err) {
-      setError(err instanceof Error ? err.message : "Terjadi kesalahan");
-    } finally {
-      setLoading(false);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchData();
-  }, [fetchData]);
-
-  const summary = data.length > 0 ? calculateSummary(data) : null;
-
-  return { data, summary, uploadInfo, loading, error, refresh: fetchData };
+  return {
+    data: rows,
+    summary,
+    uploadInfo: data?.upload ?? null,
+    loading: isLoading,
+    error: error ? error.message : null,
+    refresh: () => mutate(),
+  };
 }

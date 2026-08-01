@@ -1,24 +1,15 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { SalutData } from "@/types/database";
+import { useState } from "react";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { useDashboardData } from "@/lib/hooks";
 import { ICONS } from "@/lib/icons";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { AnimatedBar } from "@/components/ui/AnimatedBar";
 
 export default function RankingSalutPage() {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [loading, setLoading] = useState(true);
+  const { data, loading } = useDashboardData();
   const [sortBy, setSortBy] = useState<"total_bayar_spp_gabungan" | "maba_bayar_admisi" | "dapat_nim" | "total_admisi" | "realisasi_maba">("total_bayar_spp_gabungan");
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => {
-        setData(json.data || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
 
   if (loading) {
     return (
@@ -75,9 +66,12 @@ export default function RankingSalutPage() {
               </div>
               <div className="text-xs text-[var(--muted)] mb-1">#{i + 1}</div>
               <div className="text-sm font-bold mb-1 truncate">{d.nama_salut}</div>
-              <div className="text-2xl font-extrabold" style={{ color: "var(--brand)" }}>
-                {sortBy === "realisasi_maba" ? formatPercent(d[sortBy]) : formatNumber(d[sortBy])}
-              </div>
+              <AnimatedNumber
+                value={sortBy === "realisasi_maba" ? d[sortBy] : d[sortBy]}
+                format={sortBy === "realisasi_maba" ? formatPercent : formatNumber}
+                className="text-2xl font-extrabold"
+                style={{ color: "var(--brand)" }}
+              />
               <div className="text-xs text-[var(--muted)]">
                 {sortBy === "realisasi_maba" ? "Realisasi Maba" : `${formatPercent(pct / 100)} dari total`}
               </div>
@@ -104,11 +98,15 @@ export default function RankingSalutPage() {
                 <div className="flex-1 min-w-0">
                   <div className="text-xs font-semibold truncate">{d.nama_salut}</div>
                   <div className="w-full h-1.5 bg-slate-200 rounded-full mt-1 overflow-hidden">
-                    <div className="h-full rounded-full" style={{ width: `${Math.min(barWidth, 100)}%`, background: "var(--brand)" }} />
+                    <AnimatedBar value={Math.min(barWidth, 100)} />
                   </div>
                 </div>
                 <span className="text-sm font-extrabold text-[var(--brand)] flex-shrink-0">
-                  {sortBy === "realisasi_maba" ? formatPercent(d[sortBy]) : formatNumber(d[sortBy])}
+                  <AnimatedNumber
+                    value={sortBy === "realisasi_maba" ? d[sortBy] : d[sortBy]}
+                    format={sortBy === "realisasi_maba" ? formatPercent : formatNumber}
+                    duration={800}
+                  />
                 </span>
               </div>
             );

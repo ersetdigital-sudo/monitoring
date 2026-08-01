@@ -1,23 +1,16 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import type { SalutData } from "@/types/database";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { useDashboardData } from "@/lib/hooks";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import {
   BarChart, Bar, XAxis, YAxis, CartesianGrid, Tooltip,
   ResponsiveContainer, Legend, PieChart, Pie, Cell,
 } from "recharts";
 
 export default function GrafikAnalitikPage() {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => { setData(json.data || []); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+  const { data, loading } = useDashboardData();
 
   if (loading) return <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="card p-4 animate-pulse h-72" />)}</div>;
 
@@ -49,10 +42,10 @@ export default function GrafikAnalitikPage() {
       <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Grafik & Analitik</h2>
 
       <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-        <div className="card p-4 text-center"><div className="text-2xl font-extrabold text-[var(--brand)]">{formatNumber(totalAdmisi)}</div><div className="text-xs text-[var(--muted)]">Total Admisi</div></div>
-        <div className="card p-4 text-center"><div className="text-2xl font-extrabold text-emerald-600">{formatNumber(totalBayar)}</div><div className="text-xs text-[var(--muted)]">Total Bayar</div></div>
-        <div className="card p-4 text-center"><div className="text-2xl font-extrabold text-rose-600">{formatNumber(totalBelum)}</div><div className="text-xs text-[var(--muted)]">Belum Bayar</div></div>
-        <div className="card p-4 text-center"><div className="text-2xl font-extrabold text-violet-600">{formatPercent(totalAdmisi > 0 ? totalBayar / totalAdmisi : 0)}</div><div className="text-xs text-[var(--muted)]">Progress Bayar</div></div>
+        <div className="card p-4 text-center"><AnimatedNumber value={totalAdmisi} format={formatNumber} className="text-2xl font-extrabold text-[var(--brand)]" /><div className="text-xs text-[var(--muted)]">Total Admisi</div></div>
+        <div className="card p-4 text-center"><AnimatedNumber value={totalBayar} format={formatNumber} className="text-2xl font-extrabold text-emerald-600" /><div className="text-xs text-[var(--muted)]">Total Bayar</div></div>
+        <div className="card p-4 text-center"><AnimatedNumber value={totalBelum} format={formatNumber} className="text-2xl font-extrabold text-rose-600" /><div className="text-xs text-[var(--muted)]">Belum Bayar</div></div>
+        <div className="card p-4 text-center"><AnimatedNumber value={totalAdmisi > 0 ? totalBayar / totalAdmisi : 0} format={formatPercent} className="text-2xl font-extrabold text-violet-600" /><div className="text-xs text-[var(--muted)]">Progress Bayar</div></div>
       </div>
 
       <div className="card p-5">

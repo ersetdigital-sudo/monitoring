@@ -2,24 +2,22 @@
 
 import { useEffect, useRef, useState } from "react";
 
-interface AnimatedNumberProps {
-  value: number;
+interface AnimatedBarProps {
+  value: number; // 0 - 100
   duration?: number;
-  format?: (n: number) => string;
   className?: string;
-  style?: React.CSSProperties;
+  background?: string;
 }
 
 const easeOutCubic = (t: number) => 1 - Math.pow(1 - t, 3);
 
-export function AnimatedNumber({
+export function AnimatedBar({
   value,
   duration = 1000,
-  format = (n) => n.toLocaleString("id-ID"),
-  className,
-  style,
-}: AnimatedNumberProps) {
-  const [display, setDisplay] = useState(0);
+  className = "",
+  background = "var(--brand)",
+}: AnimatedBarProps) {
+  const [width, setWidth] = useState(0);
   const targetRef = useRef(0);
 
   useEffect(() => {
@@ -31,7 +29,7 @@ export function AnimatedNumber({
 
     const tick = (now: number) => {
       const t = Math.min((now - start) / duration, 1);
-      setDisplay(from + (value - from) * easeOutCubic(t));
+      setWidth(from + (value - from) * easeOutCubic(t));
       if (t < 1) {
         raf = requestAnimationFrame(tick);
       } else {
@@ -44,8 +42,9 @@ export function AnimatedNumber({
   }, [value, duration]);
 
   return (
-    <span className={className} style={style}>
-      {format(display)}
-    </span>
+    <div
+      className={`h-full rounded-full ${className}`}
+      style={{ width: `${width}%`, background }}
+    />
   );
 }

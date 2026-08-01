@@ -1,20 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
 import type { SalutData, Upload } from "@/types/database";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { useDashboardData } from "@/lib/hooks";
 
 export default function LaporanPage() {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [upload, setUpload] = useState<Upload | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => { setData(json.data || []); setUpload(json.upload || null); setLoading(false); })
-      .catch(() => setLoading(false));
-  }, []);
+  const { data, uploadInfo, loading } = useDashboardData();
+  const upload = uploadInfo as Upload | null;
 
   if (loading) return <div className="card p-6 animate-pulse h-96" />;
 

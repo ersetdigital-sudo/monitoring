@@ -1,7 +1,9 @@
 "use client";
 
 import { useState, useRef } from "react";
+import { mutate } from "swr";
 import type { DuplicateDetail } from "@/types/database";
+import { DATA_KEY } from "@/lib/hooks";
 
 interface UploadResult {
   success?: boolean;
@@ -47,6 +49,7 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
         setFile(null);
         if (inputRef.current) inputRef.current.value = "";
         onUploadSuccess?.();
+        mutate(DATA_KEY);
       }
     } catch {
       setResult({ error: "Gagal mengupload file. Coba lagi." });

@@ -1,22 +1,12 @@
 "use client";
 
-import { useState, useEffect } from "react";
-import type { SalutData } from "@/types/database";
 import { formatNumber, formatPercent } from "@/lib/utils";
+import { useDashboardData } from "@/lib/hooks";
+import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
+import { AnimatedBar } from "@/components/ui/AnimatedBar";
 
 export default function DataSalutPage() {
-  const [data, setData] = useState<SalutData[]>([]);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    fetch("/api/data")
-      .then((r) => r.json())
-      .then((json) => {
-        setData(json.data || []);
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  }, []);
+  const { data, loading } = useDashboardData();
 
   if (loading) {
     return (
@@ -55,17 +45,17 @@ export default function DataSalutPage() {
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">TOTAL SALUT</div>
-          <div className="text-2xl font-extrabold text-[var(--brand)]">{data.length}</div>
+          <AnimatedNumber value={data.length} className="text-2xl font-extrabold text-[var(--brand)]" />
           <div className="text-[11px] text-[var(--muted)]">Pokjar terdaftar</div>
         </div>
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">TOTAL ADMISI</div>
-          <div className="text-2xl font-extrabold text-[var(--brand)]">{formatNumber(totalAdmisi)}</div>
+          <AnimatedNumber value={totalAdmisi} format={formatNumber} className="text-2xl font-extrabold text-[var(--brand)]" />
           <div className="text-[11px] text-[var(--muted)]">Mahasiswa</div>
         </div>
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">RATA-RATA ADMISI</div>
-          <div className="text-2xl font-extrabold text-[var(--brand)]">{data.length > 0 ? formatNumber(Math.round(totalAdmisi / data.length)) : 0}</div>
+          <AnimatedNumber value={data.length > 0 ? Math.round(totalAdmisi / data.length) : 0} format={formatNumber} className="text-2xl font-extrabold text-[var(--brand)]" />
           <div className="text-[11px] text-[var(--muted)]">Per SALUT</div>
         </div>
       </div>
@@ -78,36 +68,39 @@ export default function DataSalutPage() {
             <div key={d.id} className="card p-4 space-y-3">
               <div className="flex items-center justify-between">
                 <h3 className="text-sm font-bold truncate">{d.nama_salut}</h3>
-                <span className="text-xs font-bold px-2 py-0.5 rounded-full" style={{
-                  background: pctBayar >= 80 ? "#dcfce7" : pctBayar >= 50 ? "#fef3c7" : "#fee2e2",
-                  color: pctBayar >= 80 ? "#16a34a" : pctBayar >= 50 ? "#d97706" : "#dc2626",
-                }}>
-                  {formatPercent(pctBayar / 100)}
-                </span>
+                <AnimatedNumber
+                  value={pctBayar / 100}
+                  format={formatPercent}
+                  className="text-xs font-bold px-2 py-0.5 rounded-full"
+                  style={{
+                    background: pctBayar >= 80 ? "#dcfce7" : pctBayar >= 50 ? "#fef3c7" : "#fee2e2",
+                    color: pctBayar >= 80 ? "#16a34a" : pctBayar >= 50 ? "#d97706" : "#dc2626",
+                  }}
+                />
               </div>
               <div className="w-full h-2 bg-slate-100 rounded-full overflow-hidden">
-                <div className="h-full rounded-full transition-all" style={{ width: `${pctBayar}%`, background: "var(--brand)" }} />
+                <AnimatedBar value={pctBayar} />
               </div>
               <div className="grid grid-cols-2 gap-2 text-xs">
                 <div className="bg-blue-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Admisi:</span>{" "}
-                  <span className="font-semibold">{formatNumber(d.total_admisi)}</span>
+                  <AnimatedNumber value={d.total_admisi} format={formatNumber} className="font-semibold" />
                 </div>
                 <div className="bg-blue-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Bayar:</span>{" "}
-                  <span className="font-semibold text-emerald-600">{formatNumber(d.maba_bayar_admisi)}</span>
+                  <AnimatedNumber value={d.maba_bayar_admisi} format={formatNumber} className="font-semibold text-emerald-600" />
                 </div>
                 <div className="bg-blue-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">NIM:</span>{" "}
-                  <span className="font-semibold">{formatNumber(d.dapat_nim)}</span>
+                  <AnimatedNumber value={d.dapat_nim} format={formatNumber} className="font-semibold" />
                 </div>
                 <div className="bg-orange-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Ongoing:</span>{" "}
-                  <span className="font-semibold">{formatNumber(d.ongoing_total_registrasi)}</span>
+                  <AnimatedNumber value={d.ongoing_total_registrasi} format={formatNumber} className="font-semibold" />
                 </div>
                 <div className="bg-slate-50 rounded px-2 py-1 col-span-2">
                   <span className="text-[var(--muted)]">Total Bayar SPP:</span>{" "}
-                  <span className="font-bold text-[var(--brand)]">{formatNumber(d.total_bayar_spp_gabungan)}</span>
+                  <AnimatedNumber value={d.total_bayar_spp_gabungan} format={formatNumber} className="font-bold text-[var(--brand)]" />
                 </div>
               </div>
             </div>

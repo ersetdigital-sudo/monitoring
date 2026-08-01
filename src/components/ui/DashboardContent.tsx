@@ -4,7 +4,7 @@ import { useMemo } from "react";
 import { ICONS } from "@/lib/icons";
 import { useDashboardData } from "@/lib/hooks";
 import { useFilter } from "@/lib/filter-context";
-import { formatNumber, formatPercent } from "@/lib/utils";
+import { formatNumber, formatPercent, isNonSalut, displaySalutName } from "@/lib/utils";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { BarChartCard, GroupedBarChartCard, DonutCard } from "@/components/charts";
 
@@ -148,13 +148,6 @@ export function DashboardContent() {
     { title: "Total Bayar SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 
-  const isNonSalut = (nama: string) => {
-    const s = nama.toUpperCase().trim();
-    return s.includes("NON SALUT") || s.includes("NON POKJAR");
-  };
-
-  const displayName = (nama: string) => (isNonSalut(nama) ? "NON SALUT" : nama);
-
   const top5 = [...rawData]
     .filter((d) => !isNonSalut(d.nama_salut))
     .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan)
@@ -271,7 +264,7 @@ export function DashboardContent() {
                   return (
                     <tr key={r.id} className="hover:bg-slate-50">
                       <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
-                      <td className="py-2.5 pr-3 font-semibold">{displayName(r.nama_salut)}</td>
+                      <td className="py-2.5 pr-3 font-semibold">{displaySalutName(r.nama_salut)}</td>
                       <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.total_admisi)}</td>
                       <td className="py-2.5 pr-3 text-emerald-600 font-semibold bg-blue-50">{formatNumber(r.maba_bayar_admisi)}</td>
                       <td className="py-2.5 pr-3 bg-blue-50">{formatNumber(r.maba_registrasi_bayar_spp)}</td>

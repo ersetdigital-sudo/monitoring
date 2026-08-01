@@ -7,6 +7,7 @@ import { createClient } from "@/lib/supabase/client";
 import { ICONS } from "@/lib/icons";
 import { useFilter } from "@/lib/filter-context";
 import { useDashboardData } from "@/lib/hooks";
+import { displaySalutName } from "@/lib/utils";
 
 const navItems = [
   { href: "/", label: "Dashboard", icon: ICONS.dashboard },
@@ -140,7 +141,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
               >
                 <option value="">Semua SALUT</option>
                 {salutList.map((s) => (
-                  <option key={s} value={s}>{s}</option>
+                  <option key={s} value={s}>{displaySalutName(s)}</option>
                 ))}
               </select>
               <select

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber, formatPercent } from "@/lib/utils";
+import { formatNumber, formatPercent, isNonSalut } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 import { ICONS } from "@/lib/icons";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
@@ -19,11 +19,6 @@ export default function RankingSalutPage() {
       </div>
     );
   }
-
-  const isNonSalut = (nama: string) => {
-    const s = nama.toUpperCase().trim();
-    return s.includes("NON SALUT") || s.includes("NON POKJAR");
-  };
 
   const ranked = data
     .filter((d) => !isNonSalut(d.nama_salut))

@@ -1,6 +1,6 @@
 "use client";
 
-import { formatNumber, formatPercent } from "@/lib/utils";
+import { formatNumber, formatPercent, displaySalutName } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { AnimatedBar } from "@/components/ui/AnimatedBar";
@@ -62,7 +62,7 @@ export default function DataSalutPage() {
           return (
             <div key={d.id} className="card p-4 space-y-3">
               <div className="flex items-center justify-between">
-                <h3 className="text-sm font-bold truncate">{d.nama_salut}</h3>
+                <h3 className="text-sm font-bold truncate">{displaySalutName(d.nama_salut)}</h3>
                 <AnimatedNumber
                   value={realisasiPct / 100}
                   format={formatPercent}

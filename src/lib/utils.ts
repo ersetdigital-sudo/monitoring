@@ -41,3 +41,12 @@ export function formatNumber(n: number): string {
 export function formatPercent(n: number): string {
   return `${(n * 100).toFixed(2).replace(".", ",")}%`;
 }
+
+export function isNonSalut(nama: string): boolean {
+  const s = nama.toUpperCase().trim();
+  return s.includes("NON SALUT") || s.includes("NON POKJAR");
+}
+
+export function displaySalutName(nama: string): string {
+  return isNonSalut(nama) ? "NON SALUT" : nama;
+}

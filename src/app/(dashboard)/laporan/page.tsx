@@ -1,7 +1,7 @@
 "use client";
 
 import type { SalutData, Upload } from "@/types/database";
-import { formatNumber, formatPercent } from "@/lib/utils";
+import { formatNumber, formatPercent, displaySalutName } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 
 export default function LaporanPage() {
@@ -45,7 +45,7 @@ export default function LaporanPage() {
       "DATA PER SALUT",
       "SALUT,ADMISI,NIM,MABA BAYAR SPP,ONGOING BAYAR SPP,TOTAL SPP,TARGET,REALISASI",
       ...data.map((d) =>
-        `${d.nama_salut},${d.total_admisi},${d.dapat_nim},${d.maba_registrasi_bayar_spp},${d.ongoing_bayar_spp},${d.total_bayar_spp_gabungan},${d.target_maba},${formatPercent(d.realisasi_maba)}`
+        `${displaySalutName(d.nama_salut)},${d.total_admisi},${d.dapat_nim},${d.maba_registrasi_bayar_spp},${d.ongoing_bayar_spp},${d.total_bayar_spp_gabungan},${d.target_maba},${formatPercent(d.realisasi_maba)}`
       ),
     ].join("\n");
 
@@ -120,7 +120,7 @@ export default function LaporanPage() {
                 {data.map((d, i) => (
                   <tr key={d.id} className="hover:bg-slate-50">
                     <td className="py-2 pr-3 text-[var(--muted)]">{i + 1}</td>
-                    <td className="py-2 pr-3 font-semibold">{d.nama_salut}</td>
+                    <td className="py-2 pr-3 font-semibold">{displaySalutName(d.nama_salut)}</td>
                     <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.total_admisi)}</td>
                     <td className="py-2 pr-3 bg-blue-50/30">{formatNumber(d.dapat_nim)}</td>
                     <td className="py-2 pr-3 text-emerald-600 font-semibold bg-blue-50/30">{formatNumber(d.maba_registrasi_bayar_spp)}</td>

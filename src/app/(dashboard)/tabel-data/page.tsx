@@ -2,7 +2,7 @@
 
 import { useMemo, useState } from "react";
 import type { SalutData } from "@/types/database";
-import { formatNumber } from "@/lib/utils";
+import { formatNumber, displaySalutName } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 
 export default function TabelDataPage() {
@@ -102,7 +102,7 @@ export default function TabelDataPage() {
       .map((d) =>
         columns
           .map((c) => {
-            if (c.key === "nama_salut") return `"${d.nama_salut}"`;
+            if (c.key === "nama_salut") return `"${displaySalutName(d.nama_salut)}"`;
             if (c.key === "realisasi") {
               const pct = d.target_maba > 0 ? (d.maba_registrasi_bayar_spp / d.target_maba) * 100 : 0;
               return `${pct.toFixed(2)}%`;
@@ -209,6 +209,8 @@ export default function TabelDataPage() {
                       if (col.key === "realisasi") {
                         const pct = r.target_maba > 0 ? (r.maba_registrasi_bayar_spp / r.target_maba) * 100 : 0;
                         display = `${pct.toFixed(2).replace(".", ",")}%`;
+                      } else if (col.key === "nama_salut") {
+                        display = displaySalutName(r.nama_salut);
                       } else {
                         const val = r[col.key as keyof SalutData];
                         display = typeof val === "number" ? formatNumber(val) : String(val);

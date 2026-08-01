@@ -38,23 +38,36 @@ export function DashboardContent() {
     const belum_bayar = data.reduce((s, d) => s + d.maba_belum_bayar_admisi, 0);
     const dapat_nim = data.reduce((s, d) => s + d.dapat_nim, 0);
     const registrasi_mtk = data.reduce((s, d) => s + d.maba_registrasi_total, 0);
+    const maba_registrasi_belum_bayar_spp = data.reduce(
+      (s, d) => s + d.maba_registrasi_belum_bayar_spp,
+      0
+    );
+    const maba_registrasi_bayar_spp = data.reduce(
+      (s, d) => s + d.maba_registrasi_bayar_spp,
+      0
+    );
     const ongoing = data.reduce((s, d) => s + d.ongoing_total_registrasi, 0);
+    const ongoing_belum_bayar_spp = data.reduce(
+      (s, d) => s + d.ongoing_belum_bayar_spp,
+      0
+    );
+    const ongoing_bayar_spp = data.reduce((s, d) => s + d.ongoing_bayar_spp, 0);
     const total_bayar_spp_gabungan = data.reduce((s, d) => s + d.total_bayar_spp_gabungan, 0);
     const target_maba = data.reduce((s, d) => s + d.target_maba, 0);
-    const total_maba_bayar_spp = data.reduce((s, d) => s + d.maba_registrasi_bayar_spp, 0);
-    const progress_total = total_admisi > 0 ? total_bayar / total_admisi : 0;
-    const realisasi_maba = target_maba > 0 ? total_maba_bayar_spp / target_maba : 0;
+    const realisasi_maba = target_maba > 0 ? maba_registrasi_bayar_spp / target_maba : 0;
     return {
       total_admisi,
       total_bayar,
       belum_bayar,
       dapat_nim,
       registrasi_mtk,
+      maba_registrasi_belum_bayar_spp,
+      maba_registrasi_bayar_spp,
       ongoing,
-      progress_total,
+      ongoing_belum_bayar_spp,
+      ongoing_bayar_spp,
       target_maba,
       realisasi_maba,
-      total_maba_bayar_spp,
       total_bayar_spp_gabungan,
     };
   }, [data]);
@@ -62,8 +75,8 @@ export function DashboardContent() {
   if (loading) {
     return (
       <div className="space-y-6">
-        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
-          {Array.from({ length: 11 }).map((_, i) => (
+        <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
+          {Array.from({ length: 12 }).map((_, i) => (
             <div key={i} className="card p-4 animate-pulse">
               <div className="flex items-start gap-3">
                 <div className="w-[46px] h-[46px] rounded-xl bg-slate-100" />
@@ -115,25 +128,22 @@ export function DashboardContent() {
     );
   }
 
-  const pct = (val: number) =>
-    summary.total_admisi > 0
-      ? `${((val / summary.total_admisi) * 100).toFixed(2).replace(".", ",")}%`
-      : "0%";
+  const pctInt = (num: number, den: number) =>
+    den > 0 ? `${Math.round((num / den) * 100)}%` : "0%";
 
   const stats = [
-    { title: "TOTAL ADMISI", value: summary.total_admisi, format: formatNumber, unit: "Mahasiswa", sub: "100% dari admisi", color: "#2563eb", bg: "#e0edff", icon: ICONS.users },
-    { title: "TOTAL BAYAR", value: summary.total_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.total_bayar)} dari admisi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.checkCircle },
-    { title: "BELUM BAYAR", value: summary.belum_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.belum_bayar)} dari admisi`, color: "#ea580c", bg: "#ffedd5", icon: ICONS.receipt },
-    { title: "DAPAT NIM", value: summary.dapat_nim, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.dapat_nim)} dari admisi`, color: "#7c3aed", bg: "#ede9fe", icon: ICONS.id },
-    { title: "REGISTRASI MTK", value: summary.registrasi_mtk, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.registrasi_mtk)} dari admisi`, color: "#2563eb", bg: "#e0edff", icon: ICONS.book },
-    { title: "ONGOING", value: summary.ongoing, format: formatNumber, unit: "Mahasiswa", sub: `${pct(summary.ongoing)} dari admisi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
-    { title: "PROGRESS TOTAL", value: summary.progress_total, format: formatPercent, unit: "Pembayaran", sub: "", color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
-  ];
-
-  const newStats = [
-    { title: "TARGET MABA", value: summary.target_maba, format: formatNumber, unit: "Mahasiswa", sub: "Target pendaftaran", color: "#0891b2", bg: "#ecfeff", icon: ICONS.gauge },
-    { title: "REALISASI MABA", value: summary.realisasi_maba, format: formatPercent, unit: "Pencapaian", sub: `${formatNumber(summary.total_maba_bayar_spp)} / ${formatNumber(summary.target_maba)}`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
-    { title: "TOTAL BAYAR SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Maba + Ongoing", sub: "Gabungan SPP", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
+    { title: "Total Admisi", value: summary.total_admisi, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.total_admisi, summary.target_maba)} dari Target Maba`, color: "#2563eb", bg: "#e0edff", icon: ICONS.users },
+    { title: "Total Bayar Admisi", value: summary.total_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.total_bayar, summary.total_admisi)} dari Total Admisi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.checkCircle },
+    { title: "Belum Bayar Admisi", value: summary.belum_bayar, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.belum_bayar, summary.total_admisi)} dari Total Admisi`, color: "#ea580c", bg: "#ffedd5", icon: ICONS.receipt },
+    { title: "Dapat NIM", value: summary.dapat_nim, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.dapat_nim, summary.total_admisi)} dari Total Admisi`, color: "#7c3aed", bg: "#ede9fe", icon: ICONS.id },
+    { title: "Maba Registrasi", value: summary.registrasi_mtk, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.registrasi_mtk, summary.dapat_nim)} dari Dapat NIM`, color: "#0891b2", bg: "#ecfeff", icon: ICONS.book },
+    { title: "Maba Belum Bayar SPP", value: summary.maba_registrasi_belum_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.maba_registrasi_belum_bayar_spp, summary.registrasi_mtk)} dari Maba Registrasi`, color: "#dc2626", bg: "#fee2e2", icon: ICONS.clock },
+    { title: "Maba Sudah Bayar SPP", value: summary.maba_registrasi_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.maba_registrasi_bayar_spp, summary.registrasi_mtk)} dari Maba Registrasi`, color: "#059669", bg: "#ecfdf5", icon: ICONS.checkCircle },
+    { title: "Realisasi Maba", value: summary.realisasi_maba, format: formatPercent, unit: "Pencapaian", sub: `${formatNumber(summary.maba_registrasi_bayar_spp)}/${formatNumber(summary.target_maba)} Mahasiswa`, color: "#4f46e5", bg: "#e0e7ff", icon: ICONS.gauge },
+    { title: "On-Going Belum Bayar SPP", value: summary.ongoing_belum_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.ongoing_belum_bayar_spp, summary.ongoing)} dari Total Registrasi`, color: "#d97706", bg: "#fef3c7", icon: ICONS.clock },
+    { title: "On-Going Bayar SPP", value: summary.ongoing_bayar_spp, format: formatNumber, unit: "Mahasiswa", sub: `${pctInt(summary.ongoing_bayar_spp, summary.ongoing)} dari Total Registrasi`, color: "#16a34a", bg: "#dcfce7", icon: ICONS.money },
+    { title: "Total Registrasi", value: summary.ongoing, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#0ea5e9", bg: "#e0f2fe", icon: ICONS.users },
+    { title: "Total Bayar SPP", value: summary.total_bayar_spp_gabungan, format: formatNumber, unit: "Mahasiswa", sub: "Maba + On-Going", color: "#8b5cf6", bg: "#f5f3ff", icon: ICONS.money },
   ];
 
   const top5 = [...data]
@@ -157,27 +167,8 @@ export function DashboardContent() {
       )}
 
       {/* Stat Cards */}
-      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-4 gap-4">
+      <section className="grid grid-cols-1 sm:grid-cols-2 xl:grid-cols-3 gap-4">
         {stats.map((s) => (
-          <div key={s.title} className="card p-4 flex items-start gap-3">
-            <div
-              className="stat-icon"
-              style={{ background: s.bg, color: s.color }}
-              dangerouslySetInnerHTML={{ __html: s.icon }}
-            />
-            <div className="min-w-0">
-              <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">{s.title}</div>
-              <AnimatedNumber value={s.value} format={s.format} className="text-2xl font-extrabold leading-tight" style={{ color: s.color }} />
-              <div className="text-[11px] text-[var(--muted)]">{s.unit}</div>
-              {s.sub && <div className="text-[10px] font-semibold mt-0.5" style={{ color: s.color }}>{s.sub}</div>}
-            </div>
-          </div>
-        ))}
-      </section>
-
-      {/* New Stats: Target & Realisasi */}
-      <section className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {newStats.map((s) => (
           <div key={s.title} className="card p-4 flex items-start gap-3">
             <div
               className="stat-icon"

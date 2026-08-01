@@ -1,6 +1,5 @@
 "use client";
 
-import { useState } from "react";
 import { formatNumber, formatPercent } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
 import { ICONS } from "@/lib/icons";
@@ -9,7 +8,6 @@ import { AnimatedBar } from "@/components/ui/AnimatedBar";
 
 export default function RankingSalutPage() {
   const { data, loading } = useDashboardData();
-  const [sortBy, setSortBy] = useState<"total_bayar_spp_gabungan" | "maba_bayar_admisi" | "dapat_nim" | "total_admisi" | "realisasi_maba">("total_bayar_spp_gabungan");
 
   if (loading) {
     return (
@@ -22,7 +20,14 @@ export default function RankingSalutPage() {
     );
   }
 
-  const sorted = [...data].sort((a, b) => b[sortBy] - a[sortBy]);
+  const isNonSalut = (nama: string) => {
+    const s = nama.toUpperCase().trim();
+    return s.includes("NON SALUT") || s.includes("NON POKJAR");
+  };
+
+  const ranked = data
+    .filter((d) => !isNonSalut(d.nama_salut))
+    .sort((a, b) => b.total_bayar_spp_gabungan - a.total_bayar_spp_gabungan);
   const totalAdmisi = data.reduce((s, d) => s + d.total_admisi, 0);
 
   const medalConfig = [
@@ -31,34 +36,20 @@ export default function RankingSalutPage() {
     { bg: "#fdba74", color: "#9a3412" },
   ];
 
-  const sortOptions = [
-    { value: "total_bayar_spp_gabungan", label: "Total Bayar SPP" },
-    { value: "maba_bayar_admisi", label: "Admisi Bayar" },
-    { value: "dapat_nim", label: "Dapat NIM" },
-    { value: "total_admisi", label: "Total Admisi" },
-    { value: "realisasi_maba", label: "Realisasi Maba" },
-  ] as const;
-
   return (
     <div className="space-y-6">
       <div className="flex flex-wrap items-center justify-between gap-3">
         <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Ranking SALUT</h2>
-        <select
-          value={sortBy}
-          onChange={(e) => setSortBy(e.target.value as typeof sortBy)}
-          className="text-sm border border-[var(--line)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--brand)]/30"
-        >
-          {sortOptions.map((o) => (
-            <option key={o.value} value={o.value}>Urutkan: {o.label}</option>
-          ))}
-        </select>
+        <span className="text-xs font-semibold text-[var(--muted)]">
+          Berdasarkan Total Bayar SPP Maba dan Ongoing
+        </span>
       </div>
 
       {/* Top 3 Podium */}
       <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
-        {sorted.slice(0, 3).map((d, i) => {
+        {ranked.slice(0, 3).map((d, i) => {
           const medal = medalConfig[i];
-          const pct = totalAdmisi > 0 ? (d[sortBy] / (sortBy === "realisasi_maba" ? 1 : totalAdmisi)) * 100 : 0;
+          const pct = totalAdmisi > 0 ? (d.total_bayar_spp_gabungan / totalAdmisi) * 100 : 0;
           return (
             <div key={d.id} className="card p-5 text-center">
               <div className="w-14 h-14 rounded-full mx-auto mb-3 flex items-center justify-center" style={{ background: medal.bg, color: medal.color }}>
@@ -67,13 +58,13 @@ export default function RankingSalutPage() {
               <div className="text-xs text-[var(--muted)] mb-1">#{i + 1}</div>
               <div className="text-sm font-bold mb-1 truncate">{d.nama_salut}</div>
               <AnimatedNumber
-                value={sortBy === "realisasi_maba" ? d[sortBy] : d[sortBy]}
-                format={sortBy === "realisasi_maba" ? formatPercent : formatNumber}
+                value={d.total_bayar_spp_gabungan}
+                format={formatNumber}
                 className="text-2xl font-extrabold"
                 style={{ color: "var(--brand)" }}
               />
               <div className="text-xs text-[var(--muted)]">
-                {sortBy === "realisasi_maba" ? "Realisasi Maba" : `${formatPercent(pct / 100)} dari total`}
+                {`${formatPercent(pct / 100)} dari total`}
               </div>
             </div>
           );
@@ -84,11 +75,11 @@ export default function RankingSalutPage() {
       <div className="card p-4">
         <h3 className="text-sm font-bold mb-4">Ranking Lengkap</h3>
         <div className="space-y-2">
-          {sorted.map((d, i) => {
+          {ranked.map((d, i) => {
             const rank = i + 1;
             const medal = i < 3 ? medalConfig[i] : null;
-            const maxVal = sorted[0][sortBy] || 1;
-            const barWidth = sortBy === "realisasi_maba" ? d[sortBy] * 100 : (d[sortBy] / maxVal) * 100;
+            const maxVal = ranked[0]?.total_bayar_spp_gabungan || 1;
+            const barWidth = (d.total_bayar_spp_gabungan / maxVal) * 100;
 
             return (
               <div key={d.id} className="flex items-center gap-3 p-3 rounded-xl bg-slate-50 hover:bg-slate-100 transition-colors">
@@ -103,8 +94,8 @@ export default function RankingSalutPage() {
                 </div>
                 <span className="text-sm font-extrabold text-[var(--brand)] flex-shrink-0">
                   <AnimatedNumber
-                    value={sortBy === "realisasi_maba" ? d[sortBy] : d[sortBy]}
-                    format={sortBy === "realisasi_maba" ? formatPercent : formatNumber}
+                    value={d.total_bayar_spp_gabungan}
+                    format={formatNumber}
                     duration={800}
                   />
                 </span>

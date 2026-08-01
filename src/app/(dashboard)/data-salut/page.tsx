@@ -22,7 +22,7 @@ export default function DataSalutPage() {
 
   return (
     <div className="space-y-6">
-      <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Data SALUT / Pokjar</h2>
+      <h2 className="text-xl font-extrabold text-[var(--brand-dark)]">Data SALUT</h2>
 
       {/* Legend */}
       <div className="card p-3 flex flex-wrap items-center gap-4 text-xs">
@@ -42,21 +42,16 @@ export default function DataSalutPage() {
       </div>
 
       {/* Summary */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-4">
+      <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">TOTAL SALUT</div>
           <AnimatedNumber value={data.length} className="text-2xl font-extrabold text-[var(--brand)]" />
-          <div className="text-[11px] text-[var(--muted)]">Pokjar terdaftar</div>
+          <div className="text-[11px] text-[var(--muted)]">SALUT terdaftar</div>
         </div>
         <div className="card p-4">
           <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">TOTAL ADMISI</div>
           <AnimatedNumber value={totalAdmisi} format={formatNumber} className="text-2xl font-extrabold text-[var(--brand)]" />
           <div className="text-[11px] text-[var(--muted)]">Mahasiswa</div>
-        </div>
-        <div className="card p-4">
-          <div className="text-[11px] font-bold tracking-wide text-[var(--muted)]">RATA-RATA ADMISI</div>
-          <AnimatedNumber value={data.length > 0 ? Math.round(totalAdmisi / data.length) : 0} format={formatNumber} className="text-2xl font-extrabold text-[var(--brand)]" />
-          <div className="text-[11px] text-[var(--muted)]">Per SALUT</div>
         </div>
       </div>
 

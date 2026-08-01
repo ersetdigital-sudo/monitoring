@@ -170,12 +170,8 @@ export function DashboardContent() {
     0
   );
 
-  const tableRows = useMemo(
-    () =>
-      [...data].sort(
-        (a, b) => (isNonSalut(a.nama_salut) ? 1 : 0) - (isNonSalut(b.nama_salut) ? 1 : 0)
-      ),
-    [data]
+  const tableRows = [...data].sort(
+    (a, b) => (isNonSalut(a.nama_salut) ? 1 : 0) - (isNonSalut(b.nama_salut) ? 1 : 0)
   );
 
   const medalConfig = [

@@ -8,12 +8,12 @@ import { useDashboardData } from "@/lib/hooks";
 export default function TabelDataPage() {
   const { data, loading } = useDashboardData();
   const [search, setSearch] = useState("");
-  const [sortKey, setSortKey] = useState<keyof SalutData>("nama_salut");
+  const [sortKey, setSortKey] = useState<keyof SalutData | "realisasi">("nama_salut");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
   const perPage = 10;
 
-  const handleSort = (key: keyof SalutData) => {
+  const handleSort = (key: keyof SalutData | "realisasi") => {
     if (sortKey === key) {
       setSortDir(sortDir === "asc" ? "desc" : "asc");
     } else {
@@ -30,6 +30,11 @@ export default function TabelDataPage() {
       result = result.filter((d) => d.nama_salut.toLowerCase().includes(q));
     }
     result.sort((a, b) => {
+      if (sortKey === "realisasi") {
+        const av = a.target_maba > 0 ? a.maba_registrasi_bayar_spp / a.target_maba : 0;
+        const bv = b.target_maba > 0 ? b.maba_registrasi_bayar_spp / b.target_maba : 0;
+        return sortDir === "asc" ? av - bv : bv - av;
+      }
       const av = a[sortKey];
       const bv = b[sortKey];
       if (typeof av === "string" && typeof bv === "string") {
@@ -45,42 +50,51 @@ export default function TabelDataPage() {
   const totalPages = Math.ceil(filtered.length / perPage);
   const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
-  const SortIcon = ({ col }: { col: keyof SalutData }) => (
+  const totals = filtered.reduce(
+    (acc, d) => {
+      acc.total_admisi += d.total_admisi;
+      acc.maba_bayar_admisi += d.maba_bayar_admisi;
+      acc.maba_registrasi_bayar_spp += d.maba_registrasi_bayar_spp;
+      acc.target_maba += d.target_maba;
+      return acc;
+    },
+    { total_admisi: 0, maba_bayar_admisi: 0, maba_registrasi_bayar_spp: 0, target_maba: 0 }
+  );
+  const realisasiTotal =
+    totals.target_maba > 0 ? (totals.maba_registrasi_bayar_spp / totals.target_maba) * 100 : 0;
+
+  const SortIcon = ({ col }: { col: keyof SalutData | "realisasi" }) => (
     <span className="ml-1 text-[10px]">
       {sortKey === col ? (sortDir === "asc" ? "▲" : "▼") : "⇅"}
     </span>
   );
 
   // Column groups with color coding
-  const columns: { key: keyof SalutData; label: string; group: "maba" | "ongoing" | "gabungan" }[] = [
-    { key: "nama_salut", label: "SALUT", group: "gabungan" },
+  const columns: {
+    key: keyof SalutData | "realisasi";
+    label: string;
+    group?: "maba" | "capaian";
+    divider?: boolean;
+  }[] = [
+    { key: "nama_salut", label: "SALUT" },
     { key: "total_admisi", label: "ADMISI", group: "maba" },
-    { key: "maba_bayar_admisi", label: "BAYAR", group: "maba" },
-    { key: "maba_belum_bayar_admisi", label: "BELUM BAYAR", group: "maba" },
-    { key: "dapat_nim", label: "DAPAT NIM", group: "maba" },
-    { key: "belum_registrasi_mtk", label: "BELUM REG MTK", group: "maba" },
-    { key: "maba_registrasi_belum_bayar_spp", label: "MABA Belum Bayar SPP", group: "maba" },
-    { key: "maba_registrasi_bayar_spp", label: "MABA Bayar SPP", group: "maba" },
-    { key: "maba_registrasi_total", label: "MABA Total Reg", group: "maba" },
-    { key: "ongoing_belum_bayar_spp", label: "Ongoing Belum Bayar", group: "ongoing" },
-    { key: "ongoing_bayar_spp", label: "Ongoing Bayar", group: "ongoing" },
-    { key: "ongoing_total_registrasi", label: "Ongoing Total", group: "ongoing" },
-    { key: "total_bayar_spp_gabungan", label: "TOTAL BAYAR SPP", group: "gabungan" },
-    { key: "target_maba", label: "TARGET MABA", group: "gabungan" },
-    { key: "realisasi_maba", label: "REALISASI", group: "gabungan" },
+    { key: "maba_bayar_admisi", label: "BAYAR ADMISI", group: "maba" },
+    { key: "maba_registrasi_bayar_spp", label: "MABA BAYAR", group: "maba" },
+    { key: "target_maba", label: "TARGET", group: "capaian", divider: true },
+    { key: "realisasi", label: "REALISASI", group: "capaian" },
   ];
 
   const groupBg: Record<string, string> = {
     maba: "bg-blue-50",
-    ongoing: "bg-orange-50",
-    gabungan: "bg-slate-50",
+    capaian: "bg-slate-50",
   };
 
   const groupCellBg: Record<string, string> = {
     maba: "bg-blue-50/30",
-    ongoing: "bg-orange-50/30",
-    gabungan: "bg-slate-50/30",
+    capaian: "bg-slate-50/30",
   };
+
+  const dividerClass = "border-l-4 border-l-slate-300";
 
   const handleExport = () => {
     const headers = columns.map((c) => c.label).join(",");
@@ -88,15 +102,25 @@ export default function TabelDataPage() {
       .map((d) =>
         columns
           .map((c) => {
-            const val = d[c.key as keyof SalutData];
-            if (c.key === "nama_salut") return `"${val}"`;
-            if (c.key === "realisasi_maba") return `${((val as number) * 100).toFixed(2)}%`;
-            return val;
+            if (c.key === "nama_salut") return `"${d.nama_salut}"`;
+            if (c.key === "realisasi") {
+              const pct = d.target_maba > 0 ? (d.maba_registrasi_bayar_spp / d.target_maba) * 100 : 0;
+              return `${pct.toFixed(2)}%`;
+            }
+            return d[c.key as keyof SalutData];
           })
           .join(",")
       )
       .join("\n");
-    const csv = headers + "\n" + rows;
+    const totalRow = [
+      '"JUMLAH"',
+      totals.total_admisi,
+      totals.maba_bayar_admisi,
+      totals.maba_registrasi_bayar_spp,
+      totals.target_maba,
+      `${realisasiTotal.toFixed(2)}%`,
+    ].join(",");
+    const csv = headers + "\n" + rows + "\n" + totalRow;
     const blob = new Blob([csv], { type: "text/csv" });
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
@@ -127,12 +151,12 @@ export default function TabelDataPage() {
           Maba (Baru)
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-orange-200 border border-orange-300" />
-          Ongoing
+          <span className="w-3 h-3 rounded bg-slate-200 border border-slate-300" />
+          Capaian / Target
         </span>
         <span className="flex items-center gap-1.5">
-          <span className="w-3 h-3 rounded bg-slate-200 border border-slate-300" />
-          Gabungan
+          <span className="w-0.5 h-4 bg-slate-300" />
+          Pemisah
         </span>
       </div>
 
@@ -160,7 +184,7 @@ export default function TabelDataPage() {
                 {columns.map((col) => (
                   <th
                     key={col.key}
-                    className={`py-2 pr-3 font-semibold cursor-pointer hover:text-[var(--ink)] select-none whitespace-nowrap ${groupBg[col.group]}`}
+                    className={`py-2 pr-3 font-semibold cursor-pointer hover:text-[var(--ink)] select-none whitespace-nowrap ${col.divider ? dividerClass : ""} ${groupBg[col.group ?? ""] ?? ""}`}
                     onClick={() => handleSort(col.key)}
                   >
                     {col.label}
@@ -181,26 +205,50 @@ export default function TabelDataPage() {
                   <tr key={r.id} className="hover:bg-slate-50">
                     <td className="py-2.5 pr-3 text-[var(--muted)]">{(page - 1) * perPage + i + 1}</td>
                     {columns.map((col) => {
-                      const val = r[col.key as keyof SalutData];
                       let display: string;
-                      if (col.key === "realisasi_maba") {
-                        display = `${((val as number) * 100).toFixed(1)}%`;
-                      } else if (typeof val === "number") {
-                        display = formatNumber(val);
+                      if (col.key === "realisasi") {
+                        const pct = r.target_maba > 0 ? (r.maba_registrasi_bayar_spp / r.target_maba) * 100 : 0;
+                        display = `${pct.toFixed(2).replace(".", ",")}%`;
                       } else {
-                        display = String(val);
+                        const val = r[col.key as keyof SalutData];
+                        display = typeof val === "number" ? formatNumber(val) : String(val);
                       }
 
-                      let cellClass = `py-2.5 pr-3 ${groupCellBg[col.group]}`;
+                      let cellClass = `py-2.5 pr-3 ${col.divider ? dividerClass : ""} ${groupCellBg[col.group ?? ""] ?? ""}`;
                       if (col.key === "maba_bayar_admisi") cellClass += " text-emerald-600 font-semibold";
-                      if (col.key === "maba_belum_bayar_admisi") cellClass += " text-rose-600";
-                      if (col.key === "total_bayar_spp_gabungan") cellClass += " font-bold text-[var(--brand)]";
-                      if (col.key === "realisasi_maba") cellClass += " font-semibold text-emerald-700";
+                      if (col.key === "realisasi") cellClass += " font-semibold text-emerald-700";
 
                       return <td key={col.key} className={cellClass}>{display}</td>;
                     })}
                   </tr>
                 ))
+              )}
+
+              {/* JUMLAH row */}
+              {filtered.length > 0 && (
+                <tr className="font-bold bg-slate-100/80 border-t-2 border-[var(--line)]">
+                  <td className="py-2.5 pr-3 text-[var(--muted)]" />
+                  {columns.map((col) => {
+                    let display: string;
+                    let cellClass = `py-2.5 pr-3 ${col.divider ? dividerClass : ""} ${groupCellBg[col.group ?? ""] ?? ""}`;
+                    if (col.key === "nama_salut") {
+                      display = "JUMLAH";
+                      cellClass += " text-[var(--brand-dark)]";
+                    } else if (col.key === "realisasi") {
+                      display = `${realisasiTotal.toFixed(2).replace(".", ",")}%`;
+                      cellClass += " text-emerald-700";
+                    } else if (col.key === "total_admisi") {
+                      display = formatNumber(totals.total_admisi);
+                    } else if (col.key === "maba_bayar_admisi") {
+                      display = formatNumber(totals.maba_bayar_admisi);
+                    } else if (col.key === "maba_registrasi_bayar_spp") {
+                      display = formatNumber(totals.maba_registrasi_bayar_spp);
+                    } else {
+                      display = formatNumber(totals.target_maba);
+                    }
+                    return <td key={col.key} className={cellClass}>{display}</td>;
+                  })}
+                </tr>
               )}
             </tbody>
           </table>

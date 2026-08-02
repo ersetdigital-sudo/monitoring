@@ -12,8 +12,6 @@ export default function TabelDataPage() {
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<keyof SalutData | "realisasi">("nama_salut");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
-  const [page, setPage] = useState(1);
-  const perPage = 10;
 
   const data = useMemo(() => {
     if (!filter.salut) return rawData;
@@ -27,7 +25,6 @@ export default function TabelDataPage() {
       setSortKey(key);
       setSortDir("asc");
     }
-    setPage(1);
   };
 
   const filtered = useMemo(() => {
@@ -56,9 +53,6 @@ export default function TabelDataPage() {
     });
     return result;
   }, [data, search, sortKey, sortDir]);
-
-  const totalPages = Math.ceil(filtered.length / perPage);
-  const paginated = filtered.slice((page - 1) * perPage, page * perPage);
 
   const totals = filtered.reduce(
     (acc, d) => {
@@ -176,7 +170,7 @@ export default function TabelDataPage() {
           type="text"
           placeholder="Cari SALUT..."
           value={search}
-          onChange={(e) => { setSearch(e.target.value); setPage(1); }}
+          onChange={(e) => setSearch(e.target.value)}
           className="text-sm border border-[var(--line)] rounded-lg px-3 py-2 outline-none focus:ring-2 focus:ring-[var(--brand)]/30 w-64"
         />
         <button onClick={handleExport} className="text-xs font-semibold rounded-lg px-4 py-2 bg-emerald-600 text-white">
@@ -204,16 +198,16 @@ export default function TabelDataPage() {
               </tr>
             </thead>
             <tbody className="divide-y divide-[var(--line)]">
-              {paginated.length === 0 ? (
+              {filtered.length === 0 ? (
                 <tr>
                   <td colSpan={columns.length + 1} className="py-8 text-center text-[var(--muted)]">
                     Tidak ada data ditemukan
                   </td>
                 </tr>
               ) : (
-                paginated.map((r, i) => (
+                filtered.map((r, i) => (
                   <tr key={r.id} className="hover:bg-slate-50">
-                    <td className="py-2.5 pr-3 text-[var(--muted)]">{(page - 1) * perPage + i + 1}</td>
+                    <td className="py-2.5 pr-3 text-[var(--muted)]">{i + 1}</td>
                     {columns.map((col) => {
                       let display: string;
                       if (col.key === "realisasi") {
@@ -266,18 +260,11 @@ export default function TabelDataPage() {
           </table>
         </div>
 
-        {/* Pagination */}
+        {/* Info jumlah data */}
         <div className="flex items-center justify-between mt-4 pt-3 border-t border-[var(--line)]">
           <span className="text-xs text-[var(--muted)]">
-            Menampilkan {(page - 1) * perPage + 1} - {Math.min(page * perPage, filtered.length)} dari {filtered.length} data
+            Menampilkan semua {filtered.length} data (termasuk baris JUMLAH: {filtered.length + 1} baris total)
           </span>
-          <div className="flex gap-1">
-            <button onClick={() => setPage(Math.max(1, page - 1))} disabled={page === 1} className="text-xs px-3 py-1.5 rounded border border-[var(--line)] disabled:opacity-40 hover:bg-slate-50">Prev</button>
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map((p) => (
-              <button key={p} onClick={() => setPage(p)} className={`text-xs px-3 py-1.5 rounded border ${p === page ? "bg-[var(--brand)] text-white border-[var(--brand)]" : "border-[var(--line)] hover:bg-slate-50"}`}>{p}</button>
-            ))}
-            <button onClick={() => setPage(Math.min(totalPages, page + 1))} disabled={page === totalPages} className="text-xs px-3 py-1.5 rounded border border-[var(--line)] disabled:opacity-40 hover:bg-slate-50">Next</button>
-          </div>
         </div>
       </div>
     </div>

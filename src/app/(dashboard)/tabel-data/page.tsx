@@ -4,14 +4,21 @@ import { useMemo, useState } from "react";
 import type { SalutData } from "@/types/database";
 import { formatNumber, displaySalutName, isNonSalut } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
+import { useFilter } from "@/lib/filter-context";
 
 export default function TabelDataPage() {
-  const { data, loading } = useDashboardData();
+  const { data: rawData, loading } = useDashboardData();
+  const { filter } = useFilter();
   const [search, setSearch] = useState("");
   const [sortKey, setSortKey] = useState<keyof SalutData | "realisasi">("nama_salut");
   const [sortDir, setSortDir] = useState<"asc" | "desc">("asc");
   const [page, setPage] = useState(1);
   const perPage = 10;
+
+  const data = useMemo(() => {
+    if (!filter.salut) return rawData;
+    return rawData.filter((d) => d.nama_salut === filter.salut);
+  }, [rawData, filter]);
 
   const handleSort = (key: keyof SalutData | "realisasi") => {
     if (sortKey === key) {

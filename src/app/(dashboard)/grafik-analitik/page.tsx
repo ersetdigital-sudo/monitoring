@@ -1,13 +1,21 @@
 "use client";
 
+import { useMemo } from "react";
 import type { SalutData } from "@/types/database";
 import { formatNumber, formatPercent, displaySalutName } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
+import { useFilter } from "@/lib/filter-context";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { BarChartCard, GroupedBarChartCard, DonutCard } from "@/components/charts";
 
 export default function GrafikAnalitikPage() {
-  const { data, loading } = useDashboardData();
+  const { data: rawData, loading } = useDashboardData();
+  const { filter } = useFilter();
+
+  const data = useMemo(() => {
+    if (!filter.salut) return rawData;
+    return rawData.filter((d) => d.nama_salut === filter.salut);
+  }, [rawData, filter]);
 
   if (loading) return <div className="space-y-4">{Array.from({ length: 3 }).map((_, i) => <div key={i} className="card p-4 animate-pulse h-72" />)}</div>;
 

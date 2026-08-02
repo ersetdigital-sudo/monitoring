@@ -21,13 +21,6 @@ export function DashboardContent() {
       result = result.filter((d) => d.nama_salut === filter.salut);
     }
 
-    // Filter by Status Bayar
-    if (filter.statusBayar === "sudah_bayar") {
-      result = result.filter((d) => d.maba_bayar_admisi > 0 || d.ongoing_bayar_spp > 0);
-    } else if (filter.statusBayar === "belum_bayar") {
-      result = result.filter((d) => d.maba_belum_bayar_admisi > 0 || d.ongoing_belum_bayar_spp > 0);
-    }
-
     return result;
   }, [rawData, filter]);
 

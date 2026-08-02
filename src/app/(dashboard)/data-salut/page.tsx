@@ -1,12 +1,20 @@
 "use client";
 
+import { useMemo } from "react";
 import { formatNumber, formatPercent, displaySalutName, isNonSalut } from "@/lib/utils";
 import { useDashboardData } from "@/lib/hooks";
+import { useFilter } from "@/lib/filter-context";
 import { AnimatedNumber } from "@/components/ui/AnimatedNumber";
 import { AnimatedBar } from "@/components/ui/AnimatedBar";
 
 export default function DataSalutPage() {
-  const { data, loading } = useDashboardData();
+  const { data: rawData, loading } = useDashboardData();
+  const { filter } = useFilter();
+
+  const data = useMemo(() => {
+    if (!filter.salut) return rawData;
+    return rawData.filter((d) => d.nama_salut === filter.salut);
+  }, [rawData, filter]);
 
   if (loading) {
     return (

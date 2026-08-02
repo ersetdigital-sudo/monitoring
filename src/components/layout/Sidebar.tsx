@@ -31,7 +31,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
   const salutList = data.map((d) => d.nama_salut);
   const [userEmail, setUserEmail] = useState<string | null>(null);
   const [loggingOut, setLoggingOut] = useState(false);
-  const { filter, setSalut, setStatusBayar, applyFilter } = useFilter();
+  const { filter, setSalut, applyFilter } = useFilter();
 
   useEffect(() => {
     const supabase = createClient();
@@ -143,15 +143,6 @@ export function Sidebar({ open, onClose }: SidebarProps) {
                 {salutList.map((s) => (
                   <option key={s} value={s}>{displaySalutName(s)}</option>
                 ))}
-              </select>
-              <select
-                className="sidebar-select w-full text-[11px] rounded-lg px-2.5 py-1.5 outline-none"
-                value={filter.statusBayar}
-                onChange={(e) => setStatusBayar(e.target.value)}
-              >
-                <option value="">Semua Status Bayar</option>
-                <option value="sudah_bayar">Sudah Bayar</option>
-                <option value="belum_bayar">Belum Bayar</option>
               </select>
             </div>
             <button

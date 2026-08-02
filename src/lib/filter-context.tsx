@@ -4,13 +4,11 @@ import { createContext, useContext, useState, useCallback, type ReactNode } from
 
 interface FilterState {
   salut: string;
-  statusBayar: string;
 }
 
 interface FilterContextType {
   filter: FilterState;
   setSalut: (val: string) => void;
-  setStatusBayar: (val: string) => void;
   applyFilter: () => void;
 }
 
@@ -19,24 +17,19 @@ const FilterContext = createContext<FilterContextType | null>(null);
 export function FilterProvider({ children }: { children: ReactNode }) {
   const [filter, setFilter] = useState<FilterState>({
     salut: "",
-    statusBayar: "",
   });
 
   const setSalut = useCallback((val: string) => {
     setFilter((prev) => ({ ...prev, salut: val }));
   }, []);
 
-  const setStatusBayar = useCallback((val: string) => {
-    setFilter((prev) => ({ ...prev, statusBayar: val }));
-  }, []);
-
   const applyFilter = useCallback(() => {
-    // Trigger re-render by updating a timestamp
+    // Trigger re-render by updating state
     setFilter((prev) => ({ ...prev }));
   }, []);
 
   return (
-    <FilterContext.Provider value={{ filter, setSalut, setStatusBayar, applyFilter }}>
+    <FilterContext.Provider value={{ filter, setSalut, applyFilter }}>
       {children}
     </FilterContext.Provider>
   );

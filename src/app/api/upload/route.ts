@@ -130,6 +130,7 @@ export async function POST(request: NextRequest) {
     }
 
     const interDuplicates: DuplicateDetail[] = [];
+    const carriedRows: ParsedRow[] = [];
     const validRows: ParsedRow[] = [];
 
     for (const row of afterIntraCheck) {
@@ -138,28 +139,34 @@ export async function POST(request: NextRequest) {
       );
 
       if (existingRow && isRowIdentical(row, existingRow)) {
+        // Data tidak berubah dari upload sebelumnya — tetap disertakan ke upload
+        // baru supaya upload terbaru selalu berisi dataset yang lengkap
         interDuplicates.push({
           nama_salut: row.nama_salut,
           reason: "Sudah ada di data sebelumnya",
         });
+        carriedRows.push(row);
       } else {
         validRows.push(row);
       }
     }
 
-    const allDuplicates = [...intraDuplicates, ...interDuplicates];
+    // Rows yang benar-benar ditolak hanyalah duplikat intra-file
+    const allDuplicates = [...intraDuplicates];
 
-    // If ALL rows are duplicates, don't create upload record
+    // If ALL rows are duplicates (unchanged), don't create upload record
     if (validRows.length === 0) {
       return NextResponse.json({
         success: true,
         all_duplicate: true,
         rows_imported: 0,
-        rows_duplicate: allDuplicates.length,
+        rows_duplicate: allDuplicates.length + interDuplicates.length,
         duplicates: allDuplicates,
         warnings: result.errors.filter((e) => e.startsWith("Peringatan")),
       });
     }
+
+    const rowsToImport = [...carriedRows, ...validRows];
 
     // Create upload record
     const { data: upload, error: uploadError } = await supabase
@@ -169,7 +176,7 @@ export async function POST(request: NextRequest) {
         uploaded_by: user.id,
         status: "processing",
         total_rows: result.rows.length,
-        valid_rows: validRows.length,
+        valid_rows: rowsToImport.length,
         duplicate_rows: allDuplicates.length,
       })
       .select()
@@ -183,7 +190,7 @@ export async function POST(request: NextRequest) {
     }
 
     // Insert valid rows
-    const salutRows = validRows.map((row) => ({
+    const salutRows = rowsToImport.map((row) => ({
       upload_id: upload.id,
       nama_salut: row.nama_salut,
       total_admisi: row.total_admisi,
@@ -237,7 +244,8 @@ export async function POST(request: NextRequest) {
     return NextResponse.json({
       success: true,
       upload_id: upload.id,
-      rows_imported: validRows.length,
+      rows_imported: rowsToImport.length,
+      rows_carried: carriedRows.length,
       rows_duplicate: allDuplicates.length,
       duplicates: allDuplicates,
       warnings: result.errors.filter((e) => e.startsWith("Peringatan")),

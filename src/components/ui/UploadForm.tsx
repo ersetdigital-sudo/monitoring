@@ -10,6 +10,7 @@ interface UploadResult {
   all_duplicate?: boolean;
   upload_id?: string;
   rows_imported?: number;
+  rows_carried?: number;
   rows_duplicate?: number;
   duplicates?: DuplicateDetail[];
   warnings?: string[];
@@ -136,12 +137,19 @@ export function UploadForm({ onUploadSuccess }: UploadFormProps) {
             <>
               <div className="font-bold">Upload selesai!</div>
               <div>
-                {result.rows_imported} baris berhasil diimport
+                {result.rows_imported} baris diimport
+                {result.rows_carried && result.rows_carried > 0 && (
+                  <span>
+                    {" "}
+                    (termasuk {result.rows_carried} baris yang tidak berubah dari
+                    upload sebelumnya)
+                  </span>
+                )}
                 {result.rows_duplicate && result.rows_duplicate > 0 && (
                   <span>
                     ,{" "}
                     <span className="font-semibold text-amber-700">
-                      {result.rows_duplicate} baris ditolak (duplikat)
+                      {result.rows_duplicate} baris ditolak (duplikat dalam file)
                     </span>
                   </span>
                 )}

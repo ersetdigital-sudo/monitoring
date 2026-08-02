@@ -266,7 +266,7 @@ export default function TabelDataPage() {
                 <th colSpan={3} className={`py-1.5 pr-3 font-semibold text-center whitespace-nowrap ${subGroupHeaderBg.maba}`}>
                   Admisi
                 </th>
-                <th rowSpan={2} className={`py-1.5 pr-3 font-semibold text-center whitespace-nowrap ${subGroupHeaderBg.maba}`}>
+                <th className={`py-1.5 pr-3 font-semibold text-center whitespace-nowrap ${subGroupHeaderBg.maba}`}>
                   Dapat Nim
                 </th>
                 <th colSpan={3} className={`py-1.5 pr-3 font-semibold text-center whitespace-nowrap ${subGroupHeaderBg.maba}`}>

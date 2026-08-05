@@ -177,7 +177,7 @@ export function DashboardContent() {
     <>
       {/* Upload info */}
       {uploadInfo && (
-        <div className="text-sm text-center">
+        <div className="text-sm text-left">
           <span className="text-[var(--muted)]">Data dari: </span>
           <span className="font-semibold text-[var(--ink)]">
             {uploadInfo.nama_file.replace(/\.xlsx$/i, "")}

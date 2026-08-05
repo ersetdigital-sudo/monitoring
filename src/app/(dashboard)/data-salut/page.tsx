@@ -103,6 +103,10 @@ export default function DataSalutPage() {
                   <AnimatedNumber value={d.dapat_nim} format={formatNumber} className="font-semibold" />
                 </div>
                 <div className="bg-blue-50/50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">Maba Belum Registrasi:</span>{" "}
+                  <AnimatedNumber value={d.belum_registrasi_mtk} format={formatNumber} className="font-semibold text-red-600" />
+                </div>
+                <div className="bg-blue-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Maba Bayar SPP:</span>{" "}
                   <AnimatedNumber value={d.maba_registrasi_bayar_spp} format={formatNumber} className="font-semibold text-emerald-600" />
                 </div>

@@ -177,9 +177,15 @@ export function DashboardContent() {
     <>
       {/* Upload info */}
       {uploadInfo && (
-        <div className="text-xs text-[var(--muted)]">
-          Data dari: <span className="font-semibold">{uploadInfo.nama_file.replace(/\.xlsx$/i, "")}</span>{" "}
-          — {new Date(uploadInfo.created_at).toLocaleString("id-ID")}
+        <div className="text-sm text-center">
+          <span className="text-[var(--muted)]">Data dari: </span>
+          <span className="font-semibold text-[var(--ink)]">
+            {uploadInfo.nama_file.replace(/\.xlsx$/i, "")}
+          </span>{" "}
+          <span className="text-[var(--muted)]">—</span>{" "}
+          <span className="font-bold text-[var(--brand)]">
+            {new Date(uploadInfo.created_at).toLocaleString("id-ID")}
+          </span>
         </div>
       )}
 

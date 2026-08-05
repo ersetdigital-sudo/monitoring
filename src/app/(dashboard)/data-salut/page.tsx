@@ -106,9 +106,17 @@ export default function DataSalutPage() {
                   <span className="text-[var(--muted)]">Maba Bayar SPP:</span>{" "}
                   <AnimatedNumber value={d.maba_registrasi_bayar_spp} format={formatNumber} className="font-semibold text-emerald-600" />
                 </div>
+                <div className="bg-blue-50/50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">Maba Belum Bayar SPP:</span>{" "}
+                  <AnimatedNumber value={d.maba_registrasi_belum_bayar_spp} format={formatNumber} className="font-semibold text-red-600" />
+                </div>
                 <div className="bg-orange-50/50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">On-Going Bayar SPP:</span>{" "}
                   <AnimatedNumber value={d.ongoing_bayar_spp} format={formatNumber} className="font-semibold" />
+                </div>
+                <div className="bg-orange-50/50 rounded px-2 py-1">
+                  <span className="text-[var(--muted)]">On-Going Belum Bayar SPP:</span>{" "}
+                  <AnimatedNumber value={d.ongoing_belum_bayar_spp} format={formatNumber} className="font-semibold text-red-600" />
                 </div>
                 <div className="bg-slate-50 rounded px-2 py-1">
                   <span className="text-[var(--muted)]">Total Bayar SPP:</span>{" "}
